@@ -1,4 +1,3 @@
-# Ro1305.github.io
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -55,8 +54,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .btn-del{background:none;border:0.5px solid #A32D2D;color:#f87171;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
 .btn-save{flex:1;background:var(--text1);border:none;color:var(--bg0);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
 .btn-cancel{background:none;border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text2);min-height:44px}
-.btn-add{width:100%;background:none;border:1px dashed var(--border2);color:var(--text2);border-radius:8px;padding:10px;cursor:pointer;margin-bottom:1rem;font-size:13px}
-.entry-item{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:8px 12px;border-radius:8px;margin-bottom:8px}
+.btn-add{width:100%;background:none;border:1px dashed var(--border2);color:var(--text2);border-radius:8px;padding:12px;cursor:pointer;margin-bottom:1rem;font-size:13px}
+.entry-item{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:10px 14px;border-radius:8px;margin-bottom:8px;cursor:pointer}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
 .stat-card{background:var(--bg1);border-radius:8px;padding:0.85rem}
 .stat-card .sport-icon{font-size:20px;margin-bottom:4px}
@@ -166,8 +165,7 @@ const SPORTS=[
 
 let entries={},instructions={};
 let currentDate=new Date();
-let editKey=null, editIdx=null, statPeriod='all',calView='month';
-let weekOffset=0;
+let editKey=null, editIdx=null, statPeriod='all', calView='month', weekOffset=0;
 
 function save(){try{localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions));}catch(e){}}
 function load(){try{const e=localStorage.getItem('ft2_e');if(e)entries=JSON.parse(e);const i=localStorage.getItem('ft2_i');if(i)instructions=JSON.parse(i);}catch(e){}}
@@ -274,11 +272,11 @@ function renderEntriesList(){
  list.innerHTML=dayE.map((e,i)=>{
    const sp=SPORTS.find(s=>s.id===e.sport);
    return `<div class="entry-item" onclick="showForm(${i})">
-     <div style="color:${sp.color};font-size:14px">
+     <div style="color:${sp.color};font-size:14px;font-weight:500">
        ${sp.icon} ${sp.name} ${sp.hasKm && e.km ? '· '+e.km+'km' : ''}
-       ${e.type==='planned' ? '<span style="opacity:0.5;font-size:11px"> (Planifié)</span>' : ''}
+       ${e.type==='planned' ? '<span style="opacity:0.5;font-weight:400;font-size:11px"> (Planifié)</span>' : ''}
      </div>
-     <div style="color:var(--text3)">❯</div>
+     <div style="color:var(--text3);font-size:12px">modifier ❯</div>
    </div>`;
  }).join('');
 }
@@ -303,7 +301,7 @@ function showForm(idx = null){
  }
  
  updateKmField();
- sel.addEventListener('change',updateKmField);
+ sel.onchange = updateKmField;
  document.getElementById('modal-list-view').style.display='none';
  document.getElementById('modal-form-view').style.display='block';
 }
@@ -375,8 +373,8 @@ function renderStats(){
  document.getElementById('stat-grid').innerHTML=SPORTS.map(s=>{
    const st=stats[s.id];
    const mainStat=s.hasKm
-     ?`<div class="km" style="color:${s.color}">${st.km.toFixed(1)} km</div>`
-     ?`<div class="km" style="color:${s.color}">${st.sessions} fois</div>`;
+     ? `<div class="km" style="color:${s.color}">${st.km.toFixed(1)} km</div>`
+     : `<div class="km" style="color:${s.color}">${st.sessions} fois</div>`;
    return`<div class="stat-card">
      <div class="sport-icon">${s.icon}</div>
      <div class="sport-name">${s.name}</div>

@@ -170,8 +170,19 @@ let editKey=null, editIdx=null, statPeriod='all', calView='month', weekOffset=0;
 function save(){try{localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions));}catch(e){}}
 function load(){try{const e=localStorage.getItem('ft2_e');if(e)entries=JSON.parse(e);const i=localStorage.getItem('ft2_i');if(i)instructions=JSON.parse(i);}catch(e){}}
 
-function key(d){return d.toISOString().slice(0,10)}
-function today(){return key(new Date())}
+// Remplace ces deux fonctions dans ton script :
+
+function key(d) {
+  // On construit la clé YYYY-MM-DD manuellement en local
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function today() {
+  return key(new Date());
+}
 
 function showTab(id){
  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',['calendar','stats','instructions'][i]===id)});

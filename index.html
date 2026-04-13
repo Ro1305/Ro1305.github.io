@@ -17,6 +17,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .tab{flex:1;padding:8px 4px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-0.5px;text-align:center}
 .tab.active{color:var(--text1);border-bottom:2px solid var(--text1);font-weight:500}
 .section{display:none}.section.active{display:block}
+
+/* Calendrier original */
 .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
 .cal-nav{background:none;border:0.5px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:16px;color:var(--text1);min-width:44px;min-height:44px}
 .view-toggle{display:flex;gap:6px}
@@ -25,25 +27,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-dow{text-align:center;font-size:11px;color:var(--text2);padding:3px 0;font-weight:500}
 .cal-day{min-height:52px;border:0.5px solid var(--border);border-radius:6px;padding:3px;cursor:pointer;background:var(--bg1)}
-.cal-day:active{background:var(--bg2)}
-.cal-day.empty{background:none;border-color:transparent;cursor:default}
-.cal-day.today{border-color:rgba(255,255,255,0.6);box-shadow:inset 0 0 4px rgba(255,255,255,0.1)}
+.cal-day.today{border-color:rgba(255,255,255,0.4)}
 .cal-day .day-num{font-size:11px;color:var(--text2)}
-.cal-day.today .day-num{font-weight:600;color:#60a5fa}
-.sport-badge{font-size:9px;padding:1px 4px;border-radius:3px;margin-top:2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-day.today .day-num{font-weight:500;color:var(--text1)}
+.sport-badge{font-size:9px;padding:1px 4px;border-radius:3px;margin-top:2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
 .planned{opacity:0.55}
-.week-list{display:flex;flex-direction:column;gap:6px}
-.week-day-row{display:flex;align-items:stretch;gap:8px;min-height:52px;cursor:pointer;border:0.5px solid var(--border);border-radius:8px;padding:8px;background:var(--bg1)}
-.week-day-row:active{background:var(--bg2)}
-.week-day-row.today{border-color:#60a5fa}
-.week-date{min-width:44px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.week-dow{font-size:11px;color:var(--text2);font-weight:500}
-.week-num{font-size:18px;font-weight:500;color:var(--text1)}
-.week-day-row.today .week-num{color:#60a5fa}
-.week-entries{flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
-.week-badge{font-size:11px;padding:3px 8px;border-radius:8px}
-.week-empty{font-size:12px;color:var(--text3);font-style:italic}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-end;justify-content:center}
+.note-dot{display:inline-block;width:3px;height:3px;background:currentColor;border-radius:50%;margin-left:2px;vertical-align:middle}
+
+/* Widgets Motivation */
+.widgets-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
+.widget-card{background:var(--bg1);border-radius:10px;padding:12px;border:0.5px solid var(--border)}
+.w-label{font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:4px}
+.w-val{font-size:18px;font-weight:600}
+.progress-bg{height:4px;background:var(--bg2);border-radius:2px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;background:#60a5fa;transition:width 0.3s}
+
+/* Stats Grille originale */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
+.stat-card{background:var(--bg1);border-radius:8px;padding:0.85rem}
+.stat-card .sport-icon{font-size:20px;margin-bottom:4px}
+.stat-card .sport-name{font-size:12px;color:var(--text2);margin-bottom:3px}
+.stat-card .km{font-size:20px;font-weight:500}
+.stat-card .sessions{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* Modal Originale */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:var(--bg1);border-radius:12px 12px 0 0;padding:1.25rem;width:100%;max-width:600px;border-top:0.5px solid var(--border);padding-bottom:calc(1.25rem + env(safe-area-inset-bottom,0px))}
 .modal h3{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--text1)}
@@ -52,27 +60,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .field select,.field input{width:100%;font-size:15px;min-height:40px;background:var(--bg2);color:var(--text1);border:0.5px solid var(--border);border-radius:8px;padding:0 10px}
 .modal-actions{display:flex;gap:8px;margin-top:1rem}
 .btn-del{background:none;border:0.5px solid #A32D2D;color:#f87171;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
-.btn-save{flex:1;background:var(--text1);border:none;color:var(--bg0);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
+.btn-save{flex:1;background:var(--text1);border:none;color:var(--bg0);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px;font-weight:500}
 .btn-cancel{background:none;border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text2);min-height:44px}
-.btn-add{width:100%;background:none;border:1px dashed var(--border2);color:var(--text2);border-radius:8px;padding:12px;cursor:pointer;margin-bottom:1rem;font-size:13px}
-.entry-item{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:10px 14px;border-radius:8px;margin-bottom:8px;cursor:pointer}
-.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
-.stat-card{background:var(--bg1);border-radius:8px;padding:0.85rem}
-.stat-card .sport-icon{font-size:20px;margin-bottom:4px}
-.stat-card .sport-name{font-size:12px;color:var(--text2);margin-bottom:3px}
-.stat-card .km{font-size:20px;font-weight:500}
-.stat-card .sessions{font-size:11px;color:var(--text2);margin-top:2px}
-.period-filter{display:flex;gap:6px;margin-bottom:1rem}
+.btn-add-list{width:100%;background:none;border:1px dashed var(--border2);color:var(--text2);border-radius:8px;padding:12px;cursor:pointer;margin-bottom:10px;font-size:13px}
+.list-entry{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:10px 14px;border-radius:8px;margin-bottom:8px;cursor:pointer}
+
+/* Instructions */
+.instr-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:0.85rem 1rem;margin-bottom:10px}
+.instr-card h3{font-size:14px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.instr-card textarea{width:100%;font-size:13px;color:var(--text1);background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px;resize:vertical;min-height:80px;font-family:inherit}
 .pf-btn{flex:1;background:none;border:0.5px solid var(--border);border-radius:8px;padding:7px 4px;cursor:pointer;font-size:12px;color:var(--text2);min-height:36px}
 .pf-btn.active{background:var(--bg2);color:var(--text1);border-color:var(--border2)}
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.instr-list{display:flex;flex-direction:column;gap:10px}
-.instr-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:0.85rem 1rem}
-.instr-card h3{font-size:14px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.instr-card textarea{width:100%;font-size:13px;color:var(--text1);background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px;resize:vertical;min-height:80px;font-family:-apple-system,sans-serif}
-.save-msg{font-size:11px;color:#4ade80;margin-top:3px;display:none}
 </style>
 </head>
 <body>
@@ -96,12 +94,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
        <button class="vt-btn" id="vt-week" onclick="setView('week')">Semaine</button>
      </div>
    </div>
-   <div class="legend" id="legend"></div>
    <div id="cal-container"></div>
  </div>
 
  <div id="stats" class="section">
-   <div class="period-filter">
+   <div class="widgets-row">
+     <div class="widget-card">
+       <div class="w-label">Série actuelle</div>
+       <div class="w-val">🔥 <span id="streak-val">0</span> jours</div>
+     </div>
+     <div class="widget-card">
+       <div class="w-label">Objectif Semaine</div>
+       <div class="w-val" id="goal-val">0 / 30 km</div>
+       <div class="progress-bg"><div id="goal-bar" class="progress-fill" style="width:0%"></div></div>
+     </div>
+   </div>
+
+   <div class="period-filter" style="display:flex;gap:6px;margin-bottom:1rem">
      <button class="pf-btn active" onclick="setPeriod('all',this)">Tout</button>
      <button class="pf-btn" onclick="setPeriod('month',this)">Ce mois</button>
      <button class="pf-btn" onclick="setPeriod('week',this)">Semaine</button>
@@ -109,12 +118,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
    <div class="stat-grid" id="stat-grid"></div>
    
    <div class="stat-card" style="grid-column: span 2; margin-top: 10px;">
-     <div class="sport-name" style="margin-bottom:10px">Sécurité des données</div>
+     <div style="font-size:12px; color:var(--text2); margin-bottom:10px">Sauvegarde externe</div>
      <div style="display:flex; gap:8px">
-       <button class="pf-btn" onclick="exportData()">Sauvegarder (Fichier)</button>
-       <button class="pf-btn" onclick="document.getElementById('importInput').click()">Restaurer</button>
+       <button class="pf-btn" onclick="exportData()">Exporter</button>
+       <button class="pf-btn" onclick="document.getElementById('fileIn').click()">Importer</button>
      </div>
-     <input type="file" id="importInput" style="display:none" onchange="importData(event)" accept=".json">
+     <input type="file" id="fileIn" style="display:none" onchange="importData(event)" accept=".json">
    </div>
  </div>
 
@@ -123,36 +132,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
  </div>
 </div>
 
-<div class="modal-bg" id="modal-bg" onclick="handleBgClick(event)">
+<div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
  <div class="modal">
-   <h3 id="modal-title">Séances</h3>
+   <h3 id="modal-title">Détails</h3>
    
-   <div id="modal-list-view">
-     <div id="entries-list"></div>
-     <button class="btn-add" onclick="showForm()">+ Ajouter un sport</button>
+   <div id="view-list">
+     <div id="list-container"></div>
+     <button class="btn-add-list" onclick="showForm()">+ Ajouter un sport</button>
      <button class="btn-cancel" style="width:100%" onclick="closeModal()">Fermer</button>
    </div>
 
-   <div id="modal-form-view" style="display:none">
-     <div class="field">
-       <label>Sport</label>
-       <select id="m-sport"></select>
-     </div>
-     <div class="field">
-       <label>Type</label>
-       <select id="m-type">
-         <option value="done">Réalisée</option>
-         <option value="planned">Planifiée</option>
-       </select>
-     </div>
-     <div id="km-field" class="field">
-       <label>Distance (km)</label>
-       <input type="number" id="m-km" min="0" step="0.1" placeholder="0" inputmode="decimal">
-     </div>
-     <div class="field">
-       <label>Notes</label>
-       <input type="text" id="m-notes" placeholder="Optionnel">
-     </div>
+   <div id="view-form" style="display:none">
+     <div class="field"><label>Sport</label><select id="m-sport"></select></div>
+     <div class="field"><label>Type</label><select id="m-type"><option value="done">Réalisée</option><option value="planned">Planifiée</option></select></div>
+     <div id="km-box" class="field"><label>Distance (km)</label><input type="number" id="m-km" step="0.1" inputmode="decimal"></div>
+     <div class="field"><label>Notes</label><input type="text" id="m-notes" placeholder="Optionnel"></div>
      <div class="modal-actions">
        <button class="btn-del" id="btn-del" onclick="deleteEntry()">Suppr.</button>
        <button class="btn-cancel" onclick="hideForm()">Annuler</button>
@@ -176,278 +170,162 @@ let entries={},instructions={};
 let currentDate=new Date();
 let editKey=null, editIdx=null, statPeriod='all', calView='month', weekOffset=0;
 
-// CORRECTIF DATE LOCALE (Bug du 14 avril)
-function key(d) {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-function today() { return key(new Date()); }
+function key(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function today(){return key(new Date())}
 
-function save(){try{localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions));}catch(e){}}
-function load(){try{const e=localStorage.getItem('ft2_e');if(e)entries=JSON.parse(e);const i=localStorage.getItem('ft2_i');if(i)instructions=JSON.parse(i);}catch(e){}}
-
-// EXPORT / IMPORT
-function exportData() {
-  const data = JSON.stringify({ entries, instructions });
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `fitness_backup_${today()}.json`;
-  a.click();
+function save(){localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions))}
+function load(){
+  const e=localStorage.getItem('ft2_e'); if(e)entries=JSON.parse(e);
+  const i=localStorage.getItem('ft2_i'); if(i)instructions=JSON.parse(i);
 }
 
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (imported.entries) entries = imported.entries;
-      if (imported.instructions) instructions = imported.instructions;
-      save();
-      alert("Données restaurées !");
-      location.reload();
-    } catch (err) { alert("Erreur : Fichier invalide."); }
-  };
-  reader.readAsText(file);
+function exportData(){
+  const b=new Blob([JSON.stringify({entries,instructions})],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`fitness_backup_${today()}.json`; a.click();
+}
+function importData(ev){
+  const f=ev.target.files[0]; if(!f)return;
+  const r=new FileReader(); r.onload=(e)=>{
+    const d=JSON.parse(e.target.result); entries=d.entries; instructions=d.instructions; save(); location.reload();
+  }; r.readAsText(f);
 }
 
 function showTab(id){
- document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',['calendar','stats','instructions'][i]===id)});
+ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.innerText.toLowerCase().includes(id.slice(0,3))));
  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
  document.getElementById(id).classList.add('active');
  if(id==='stats')renderStats();
  if(id==='instructions')renderInstructions();
 }
 
-function setView(v){
- calView=v;
- document.getElementById('vt-month').classList.toggle('active',v==='month');
- document.getElementById('vt-week').classList.toggle('active',v==='week');
- if(v==='week')weekOffset=0;
- renderCalendar();
-}
-
-const MONTHS=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
-const DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-
-function changeMonth(d){
- if(calView==='month'){currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()+d,1);}
- else{weekOffset+=d;}
- renderCalendar();
-}
-
-function getWeekDates(offset){
- const now=new Date();
- const dow=(now.getDay()+6)%7;
- const mon=new Date(now);mon.setDate(now.getDate()-dow+offset*7);mon.setHours(0,0,0,0);
- return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
-}
+function setView(v){ calView=v; renderCalendar(); }
+function changeMonth(d){ if(calView==='month')currentDate.setMonth(currentDate.getMonth()+d); else weekOffset+=d; renderCalendar(); }
 
 function renderCalendar(){
- const todayKey=today();
- document.getElementById('legend').innerHTML=SPORTS.map(s=>`<span class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${s.name}</span>`).join('');
  const container=document.getElementById('cal-container');
  const navLabel=document.getElementById('month-label');
-
+ const tKey=today();
+ 
  if(calView==='month'){
-   const y=currentDate.getFullYear(),m=currentDate.getMonth();
-   navLabel.textContent=MONTHS[m]+' '+y;
-   const firstDow=(new Date(y,m,1).getDay()+6)%7;
-   const daysInMonth=new Date(y,m+1,0).getDate();
-   let html=`<div class="cal-grid">${DAYS.map(d=>`<div class="cal-dow">${d}</div>`).join('')}`;
-   for(let i=0;i<firstDow;i++)html+=`<div class="cal-day empty"></div>`;
-   for(let d=1;d<=daysInMonth;d++){
+   const y=currentDate.getFullYear(), m=currentDate.getMonth();
+   navLabel.innerText=new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(currentDate);
+   let html='<div class="cal-grid"><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div><div class="cal-dow">Mer</div><div class="cal-dow">Jeu</div><div class="cal-dow">Ven</div><div class="cal-dow">Sam</div><div class="cal-dow">Dim</div>';
+   const first=(new Date(y,m,1).getDay()+6)%7;
+   const total=new Date(y,m+1,0).getDate();
+   for(let i=0;i<first;i++) html+='<div class="cal-day empty"></div>';
+   for(let d=1;d<=total;d++){
      const k=key(new Date(y,m,d));
-     const isToday=k===todayKey;
-     const dayE=entries[k]||[];
-     let inner=`<div class="day-num">${d}</div>`;
-     dayE.forEach(e=>{
-       const sp=SPORTS.find(s=>s.id===e.sport);if(!sp)return;
-       const label=sp.hasKm&&e.km>0?e.km+'k':sp.name.slice(0,3);
-       inner+=`<div class="sport-badge ${e.type==='planned'?'planned':''}" style="background:${sp.color}22;color:${sp.color}">${label}</div>`;
+     const list=entries[k]||[];
+     let badges='';
+     list.forEach(e=>{
+       const sp=SPORTS.find(s=>s.id===e.sport);
+       const dot=e.notes?'<span class="note-dot"></span>':'';
+       badges+=`<div class="sport-badge ${e.type==='planned'?'planned':''}" style="background:${sp.color}22;color:${sp.color}">${sp.hasKm&&e.km?e.km+'k':sp.name.slice(0,3)}${dot}</div>`;
      });
-     html+=`<div class="cal-day${isToday?' today':''}" onclick="openModal('${k}')">${inner}</div>`;
+     html+=`<div class="cal-day ${k===tKey?'today':''}" onclick="openModal('${k}')"><div class="day-num">${d}</div>${badges}</div>`;
    }
-   html+=`</div>`;
-   container.innerHTML=html;
+   container.innerHTML=html+'</div>';
  } else {
-   const days=getWeekDates(weekOffset);
-   const fmt=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-   navLabel.textContent=fmt(days[0])+' - '+fmt(days[6]);
-   let html=`<div class="week-list">`;
-   days.forEach(d=>{
-     const k=key(d);
-     const isToday=k===todayKey;
-     const dow=DAYS[(d.getDay()+6)%7];
-     const dayE=entries[k]||[];
-     let badges=dayE.length?dayE.map(e=>{
-       const sp=SPORTS.find(s=>s.id===e.sport);if(!sp)return'';
-       const label=sp.hasKm&&e.km>0?sp.name+' '+e.km+'km':sp.name;
-       return`<span class="week-badge ${e.type==='planned'?'planned':''}" style="background:${sp.color}22;color:${sp.color}">${label}</span>`;
-     }).join(''):`<span class="week-empty">Aucune seance</span>`;
-     html+=`<div class="week-day-row${isToday?' today':''}" onclick="openModal('${k}')">
-       <div class="week-date"><div class="week-dow">${dow}</div><div class="week-num">${d.getDate()}</div></div>
-       <div class="week-entries">${badges}</div>
+   const now=new Date(); const mon=new Date(now); 
+   mon.setDate(now.getDate()-((now.getDay()+6)%7)+weekOffset*7);
+   navLabel.innerText="Semaine du "+mon.getDate()+"/"+(mon.getMonth()+1);
+   let html='<div style="display:flex; flex-direction:column; gap:6px">';
+   for(let i=0;i<7;i++){
+     const d=new Date(mon); d.setDate(mon.getDate()+i); const k=key(d);
+     const list=entries[k]||[];
+     let badges=list.map(e=>{
+       const sp=SPORTS.find(s=>s.id===e.sport);
+       return `<span class="sport-badge" style="background:${sp.color}22; color:${sp.color}; padding:4px 8px; font-size:11px">${sp.name} ${e.km?e.km+'k':''}</span>`;
+     }).join(' ');
+     html+=`<div class="stat-card ${k===tKey?'today':''}" style="display:flex; justify-content:space-between; align-items:center; min-height:52px" onclick="openModal('${k}')">
+       <div style="text-align:center; min-width:40px"><div style="font-size:10px; color:var(--text2)">${new Intl.DateTimeFormat('fr-FR',{weekday:'short'}).format(d)}</div><div style="font-size:16px; font-weight:600">${d.getDate()}</div></div>
+       <div style="flex:1; text-align:right">${badges || '<span style="color:var(--text3);font-size:11px">Repos</span>'}</div>
      </div>`;
-   });
-   html+=`</div>`;
-   container.innerHTML=html;
+   }
+   container.innerHTML=html+'</div>';
  }
-}
-
-function openModal(k){
- editKey=k;
- const d = new Date(k + 'T12:00:00');
- document.getElementById('modal-title').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
- renderEntriesList();
- hideForm();
- document.getElementById('modal-bg').classList.add('open');
-}
-
-function renderEntriesList(){
- const list=document.getElementById('entries-list');
- const dayE=entries[editKey]||[];
- list.innerHTML=dayE.map((e,i)=>{
-   const sp=SPORTS.find(s=>s.id===e.sport);
-   return `<div class="entry-item" onclick="showForm(${i})">
-     <div style="color:${sp.color};font-size:14px;font-weight:500">
-       ${sp.icon} ${sp.name} ${sp.hasKm && e.km ? '· '+e.km+'km' : ''}
-       ${e.type==='planned' ? '<span style="opacity:0.5;font-weight:400;font-size:11px"> (Planifié)</span>' : ''}
-     </div>
-     <div style="color:var(--text3);font-size:12px">modifier ❯</div>
-   </div>`;
- }).join('');
-}
-
-function showForm(idx = null){
- editIdx = idx;
- const sel=document.getElementById('m-sport');
- sel.innerHTML=SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
- 
- if(idx !== null){
-   const e = entries[editKey][idx];
-   sel.value = e.sport;
-   document.getElementById('m-type').value = e.type || 'done';
-   document.getElementById('m-km').value = e.km || '';
-   document.getElementById('m-notes').value = e.notes || '';
-   document.getElementById('btn-del').style.display = 'inline-block';
- } else {
-   document.getElementById('m-type').value = 'done';
-   document.getElementById('m-km').value = '';
-   document.getElementById('m-notes').value = '';
-   document.getElementById('btn-del').style.display = 'none';
- }
- 
- updateKmField();
- sel.onchange = updateKmField;
- document.getElementById('modal-list-view').style.display='none';
- document.getElementById('modal-form-view').style.display='block';
-}
-
-function hideForm(){
- document.getElementById('modal-list-view').style.display='block';
- document.getElementById('modal-form-view').style.display='none';
- editIdx = null;
-}
-
-function updateKmField(){
- const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value);
- document.getElementById('km-field').style.display=sp&&sp.hasKm?'block':'none';
-}
-
-function handleBgClick(e){if(e.target===document.getElementById('modal-bg'))closeModal();}
-function closeModal(){document.getElementById('modal-bg').classList.remove('open');editKey=null;}
-
-function saveEntry(){
- if(!editKey)return;
- const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value);
- const newEntry = {
-   sport:document.getElementById('m-sport').value,
-   type:document.getElementById('m-type').value,
-   km:sp&&sp.hasKm?parseFloat(document.getElementById('m-km').value)||0:0,
-   notes:document.getElementById('m-notes').value
- };
- 
- if(!entries[editKey]) entries[editKey] = [];
- if(editIdx !== null) entries[editKey][editIdx] = newEntry;
- else entries[editKey].push(newEntry);
- 
- save(); hideForm(); renderEntriesList(); renderCalendar();
-}
-
-function deleteEntry(){
- if(editKey && editIdx !== null){
-   entries[editKey].splice(editIdx, 1);
-   if(entries[editKey].length === 0) delete entries[editKey];
-   save(); hideForm(); renderEntriesList(); renderCalendar();
- }
-}
-
-function setPeriod(p,btn){
- statPeriod=p;
- document.querySelectorAll('.pf-btn').forEach(b=>b.classList.remove('active'));
- btn.classList.add('active');renderStats();
 }
 
 function renderStats(){
- const now=new Date();
- const stats={};
- SPORTS.forEach(s=>{stats[s.id]={km:0,sessions:0};});
- Object.entries(entries).forEach(([k,arr])=>{
-   if(!arr||!arr.length)return;
-   const d = new Date(k + 'T12:00:00');
-   if(statPeriod==='week'){
-     const wd=new Date(now);wd.setDate(now.getDate()-((now.getDay()+6)%7));wd.setHours(0,0,0,0);
-     if(d<wd)return;
-   } else if(statPeriod==='month'){
-     if(d.getFullYear()!==now.getFullYear()||d.getMonth()!==now.getMonth())return;
-   }
-   arr.forEach(e=>{
-     if(e.type==='done'&&stats[e.sport]!==undefined){
-       stats[e.sport].km+=e.km||0;stats[e.sport].sessions++;
-     }
-   });
- });
- document.getElementById('stat-grid').innerHTML=SPORTS.map(s=>{
-   const st=stats[s.id];
-   const val = s.hasKm ? st.km.toFixed(1) + " km" : st.sessions + " fois";
-   return`<div class="stat-card">
-     <div class="sport-icon">${s.icon}</div>
-     <div class="sport-name">${s.name}</div>
-     <div class="km" style="color:${s.color}">${val}</div>
-     <div class="sessions">${st.sessions} seance${st.sessions!==1?'s':''}</div>
-   </div>`;
- }).join('');
+  const now=new Date();
+  // Streak
+  let streak=0; let d=new Date();
+  if(!(entries[key(d)]||[]).some(e=>e.type==='done')) d.setDate(d.getDate()-1);
+  while((entries[key(d)]||[]).some(e=>e.type==='done')){ streak++; d.setDate(d.getDate()-1); }
+  document.getElementById('streak-val').innerText=streak;
+
+  // Objectif
+  let wKm=0; const mon=new Date(now); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
+  Object.entries(entries).forEach(([k,l])=>{ if(new Date(k)>=mon) l.forEach(e=>{if(e.type==='done') wKm+=e.km||0}) });
+  document.getElementById('goal-val').innerText=`${wKm.toFixed(1)} / 30 km`;
+  document.getElementById('goal-bar').style.width=Math.min(100,(wKm/30)*100)+'%';
+
+  // Grille
+  const sObj={}; SPORTS.forEach(s=>sObj[s.id]={k:0,n:0});
+  Object.entries(entries).forEach(([k,l])=>{
+    const dt=new Date(k);
+    if(statPeriod==='month' && dt.getMonth()!==now.getMonth()) return;
+    if(statPeriod==='week' && dt<mon) return;
+    l.forEach(e=>{ if(e.type==='done'){ sObj[e.sport].k+=e.km||0; sObj[e.sport].n++; }});
+  });
+  document.getElementById('stat-grid').innerHTML=SPORTS.map(s=>{
+    const v=sObj[s.id]; if(v.n===0 && statPeriod!=='all') return '';
+    return `<div class="stat-card"><div class="sport-icon">${s.icon}</div><div class="sport-name">${s.name}</div><div class="km" style="color:${s.color}">${s.hasKm?v.k.toFixed(1)+' km':v.n+' fois'}</div><div class="sessions">${v.n} séances</div></div>`;
+  }).join('');
 }
+
+function openModal(k){
+  editKey=k; const d=new Date(k+'T12:00:00');
+  document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d);
+  renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open');
+}
+function renderEntriesList(){
+  const list=entries[editKey]||[];
+  document.getElementById('list-container').innerHTML=list.map((e,i)=>{
+    const sp=SPORTS.find(s=>s.id===e.sport);
+    return `<div class="list-entry" onclick="showForm(${i})"><div style="color:${sp.color}; font-weight:600">${sp.icon} ${sp.name} ${e.km?'· '+e.km+'k':''} ${e.type==='planned'?'(P)':''}</div><div>❯</div></div>`;
+  }).join('');
+}
+function showForm(idx=null){
+  editIdx=idx; const sel=document.getElementById('m-sport');
+  sel.innerHTML=SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+  if(idx!==null){
+    const e=entries[editKey][idx]; sel.value=e.sport; document.getElementById('m-type').value=e.type;
+    document.getElementById('m-km').value=e.km||''; document.getElementById('m-notes').value=e.notes||'';
+    document.getElementById('btn-del').style.display='block';
+  } else {
+    document.getElementById('m-type').value='done'; document.getElementById('m-km').value='';
+    document.getElementById('m-notes').value=''; document.getElementById('btn-del').style.display='none';
+  }
+  updateKmField(); sel.onchange=updateKmField;
+  document.getElementById('view-list').style.display='none';
+  document.getElementById('view-form').style.display='block';
+}
+function hideForm(){ document.getElementById('view-list').style.display='block'; document.getElementById('view-form').style.display='none'; }
+function updateKmField(){ const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value); document.getElementById('km-box').style.display=sp.hasKm?'block':'none'; }
+function bgClick(e){ if(e.target.id==='modal-bg') closeModal(); }
+function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+
+function saveEntry(){
+  const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value);
+  const e={sport:sp.id, type:document.getElementById('m-type').value, km:sp.hasKm?parseFloat(document.getElementById('m-km').value)||0:0, notes:document.getElementById('m-notes').value};
+  if(!entries[editKey]) entries[editKey]=[];
+  if(editIdx!==null) entries[editKey][editIdx]=e; else entries[editKey].push(e);
+  save(); hideForm(); renderEntriesList(); renderCalendar();
+}
+function deleteEntry(){ entries[editKey].splice(editIdx,1); if(!entries[editKey].length) delete entries[editKey]; save(); hideForm(); renderEntriesList(); renderCalendar(); }
+function setPeriod(p,btn){ statPeriod=p; document.querySelectorAll('.pf-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderStats(); }
 
 function renderInstructions(){
- document.getElementById('instr-list').innerHTML=SPORTS.map(s=>`
-   <div class="instr-card">
-     <h3><span style="font-size:15px">${s.icon}</span><span style="color:${s.color}">${s.name}</span></h3>
-     <textarea id="instr-${s.id}" placeholder="Instructions, exercices, conseils pour ${s.name}..."
-       oninput="autoSaveInstr('${s.id}')">${instructions[s.id]||''}</textarea>
-     <div class="save-msg" id="msg-${s.id}">Enregistre</div>
-   </div>`).join('');
+  document.getElementById('instr-list').innerHTML=SPORTS.map(s=>`
+    <div class="instr-card">
+      <h3>${s.icon} <span style="color:${s.color}">${s.name}</span></h3>
+      <textarea oninput="saveInstr('${s.id}',this.value)">${instructions[s.id]||''}</textarea>
+    </div>`).join('');
 }
+let t; function saveInstr(id,v){ clearTimeout(t); t=setTimeout(()=>{instructions[id]=v; save();},500); }
 
-let saveTimers={};
-function autoSaveInstr(id){
- clearTimeout(saveTimers[id]);
- saveTimers[id]=setTimeout(()=>{
-   instructions[id]=document.getElementById('instr-'+id).value;
-   save();
-   const msg=document.getElementById('msg-'+id);
-   msg.style.display='block';
-   setTimeout(()=>{msg.style.display='none';},1500);
- },800);
-}
-
-load();renderCalendar();
+load(); renderCalendar();
 </script>
 </body>
 </html>

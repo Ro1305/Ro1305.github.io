@@ -27,15 +27,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .cal-day{min-height:52px;border:0.5px solid var(--border);border-radius:6px;padding:3px;cursor:pointer;background:var(--bg1)}
 .cal-day:active{background:var(--bg2)}
 .cal-day.empty{background:none;border-color:transparent;cursor:default}
-.cal-day.today{border-color:rgba(255,255,255,0.4)}
+.cal-day.today{border-color:rgba(255,255,255,0.6);box-shadow:inset 0 0 4px rgba(255,255,255,0.1)}
 .cal-day .day-num{font-size:11px;color:var(--text2)}
-.cal-day.today .day-num{font-weight:500;color:var(--text1)}
+.cal-day.today .day-num{font-weight:600;color:#60a5fa}
 .sport-badge{font-size:9px;padding:1px 4px;border-radius:3px;margin-top:2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .planned{opacity:0.55}
 .week-list{display:flex;flex-direction:column;gap:6px}
 .week-day-row{display:flex;align-items:stretch;gap:8px;min-height:52px;cursor:pointer;border:0.5px solid var(--border);border-radius:8px;padding:8px;background:var(--bg1)}
 .week-day-row:active{background:var(--bg2)}
-.week-day-row.today{border-color:rgba(255,255,255,0.4)}
+.week-day-row.today{border-color:#60a5fa}
 .week-date{min-width:44px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .week-dow{font-size:11px;color:var(--text2);font-weight:500}
 .week-num{font-size:18px;font-weight:500;color:var(--text1)}
@@ -43,7 +43,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .week-entries{flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .week-badge{font-size:11px;padding:3px 8px;border-radius:8px}
 .week-empty{font-size:12px;color:var(--text3);font-style:italic}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:flex-end;justify-content:center}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex}
 .modal{background:var(--bg1);border-radius:12px 12px 0 0;padding:1.25rem;width:100%;max-width:600px;border-top:0.5px solid var(--border);padding-bottom:calc(1.25rem + env(safe-area-inset-bottom,0px))}
 .modal h3{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--text1)}
@@ -107,6 +107,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
      <button class="pf-btn" onclick="setPeriod('week',this)">Semaine</button>
    </div>
    <div class="stat-grid" id="stat-grid"></div>
+   
+   <div class="stat-card" style="grid-column: span 2; margin-top: 10px;">
+     <div class="sport-name" style="margin-bottom:10px">Sécurité des données</div>
+     <div style="display:flex; gap:8px">
+       <button class="pf-btn" onclick="exportData()">Sauvegarder (Fichier)</button>
+       <button class="pf-btn" onclick="document.getElementById('importInput').click()">Restaurer</button>
+     </div>
+     <input type="file" id="importInput" style="display:none" onchange="importData(event)" accept=".json">
+   </div>
  </div>
 
  <div id="instructions" class="section">
@@ -167,21 +176,44 @@ let entries={},instructions={};
 let currentDate=new Date();
 let editKey=null, editIdx=null, statPeriod='all', calView='month', weekOffset=0;
 
-function save(){try{localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions));}catch(e){}}
-function load(){try{const e=localStorage.getItem('ft2_e');if(e)entries=JSON.parse(e);const i=localStorage.getItem('ft2_i');if(i)instructions=JSON.parse(i);}catch(e){}}
-
-// Remplace ces deux fonctions dans ton script :
-
+// CORRECTIF DATE LOCALE (Bug du 14 avril)
 function key(d) {
-  // On construit la clé YYYY-MM-DD manuellement en local
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+function today() { return key(new Date()); }
 
-function today() {
-  return key(new Date());
+function save(){try{localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions));}catch(e){}}
+function load(){try{const e=localStorage.getItem('ft2_e');if(e)entries=JSON.parse(e);const i=localStorage.getItem('ft2_i');if(i)instructions=JSON.parse(i);}catch(e){}}
+
+// EXPORT / IMPORT
+function exportData() {
+  const data = JSON.stringify({ entries, instructions });
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fitness_backup_${today()}.json`;
+  a.click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (imported.entries) entries = imported.entries;
+      if (imported.instructions) instructions = imported.instructions;
+      save();
+      alert("Données restaurées !");
+      location.reload();
+    } catch (err) { alert("Erreur : Fichier invalide."); }
+  };
+  reader.readAsText(file);
 }
 
 function showTab(id){
@@ -270,7 +302,7 @@ function renderCalendar(){
 
 function openModal(k){
  editKey=k;
- const d=new Date(k+'T12:00:00');
+ const d = new Date(k + 'T12:00:00');
  document.getElementById('modal-title').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
  renderEntriesList();
  hideForm();
@@ -368,7 +400,7 @@ function renderStats(){
  SPORTS.forEach(s=>{stats[s.id]={km:0,sessions:0};});
  Object.entries(entries).forEach(([k,arr])=>{
    if(!arr||!arr.length)return;
-   const d=new Date(k+'T12:00:00');
+   const d = new Date(k + 'T12:00:00');
    if(statPeriod==='week'){
      const wd=new Date(now);wd.setDate(now.getDate()-((now.getDay()+6)%7));wd.setHours(0,0,0,0);
      if(d<wd)return;
@@ -383,13 +415,11 @@ function renderStats(){
  });
  document.getElementById('stat-grid').innerHTML=SPORTS.map(s=>{
    const st=stats[s.id];
-   const mainStat=s.hasKm
-     ? `<div class="km" style="color:${s.color}">${st.km.toFixed(1)} km</div>`
-     : `<div class="km" style="color:${s.color}">${st.sessions} fois</div>`;
+   const val = s.hasKm ? st.km.toFixed(1) + " km" : st.sessions + " fois";
    return`<div class="stat-card">
      <div class="sport-icon">${s.icon}</div>
      <div class="sport-name">${s.name}</div>
-     ${mainStat}
+     <div class="km" style="color:${s.color}">${val}</div>
      <div class="sessions">${st.sessions} seance${st.sessions!==1?'s':''}</div>
    </div>`;
  }).join('');

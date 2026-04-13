@@ -55,6 +55,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .btn-del{background:none;border:0.5px solid #A32D2D;color:#f87171;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
 .btn-save{flex:1;background:var(--text1);border:none;color:var(--bg0);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
 .btn-cancel{background:none;border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text2);min-height:44px}
+.btn-add{width:100%;background:none;border:1px dashed var(--border2);color:var(--text2);border-radius:8px;padding:10px;cursor:pointer;margin-bottom:1rem;font-size:13px}
+.entry-item{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:8px 12px;border-radius:8px;margin-bottom:8px}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
 .stat-card{background:var(--bg1);border-radius:8px;padding:0.85rem}
 .stat-card .sport-icon{font-size:20px;margin-bottom:4px}
@@ -115,30 +117,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 
 <div class="modal-bg" id="modal-bg" onclick="handleBgClick(event)">
  <div class="modal">
-   <h3 id="modal-title">Seance</h3>
-   <div class="field">
-     <label>Sport</label>
-     <select id="m-sport"></select>
+   <h3 id="modal-title">Séances</h3>
+   
+   <div id="modal-list-view">
+     <div id="entries-list"></div>
+     <button class="btn-add" onclick="showForm()">+ Ajouter un sport</button>
+     <button class="btn-cancel" style="width:100%" onclick="closeModal()">Fermer</button>
    </div>
-   <div class="field">
-     <label>Type</label>
-     <select id="m-type">
-       <option value="done">Realisee</option>
-       <option value="planned">Planifiee</option>
-     </select>
-   </div>
-   <div id="km-field" class="field">
-     <label>Distance (km)</label>
-     <input type="number" id="m-km" min="0" step="0.1" placeholder="0" inputmode="decimal">
-   </div>
-   <div class="field">
-     <label>Notes</label>
-     <input type="text" id="m-notes" placeholder="Optionnel">
-   </div>
-   <div class="modal-actions">
-     <button class="btn-del" id="btn-del" onclick="deleteEntry()" style="display:none">Suppr.</button>
-     <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-     <button class="btn-save" onclick="saveEntry()">Enregistrer</button>
+
+   <div id="modal-form-view" style="display:none">
+     <div class="field">
+       <label>Sport</label>
+       <select id="m-sport"></select>
+     </div>
+     <div class="field">
+       <label>Type</label>
+       <select id="m-type">
+         <option value="done">Réalisée</option>
+         <option value="planned">Planifiée</option>
+       </select>
+     </div>
+     <div id="km-field" class="field">
+       <label>Distance (km)</label>
+       <input type="number" id="m-km" min="0" step="0.1" placeholder="0" inputmode="decimal">
+     </div>
+     <div class="field">
+       <label>Notes</label>
+       <input type="text" id="m-notes" placeholder="Optionnel">
+     </div>
+     <div class="modal-actions">
+       <button class="btn-del" id="btn-del" onclick="deleteEntry()">Suppr.</button>
+       <button class="btn-cancel" onclick="hideForm()">Annuler</button>
+       <button class="btn-save" onclick="saveEntry()">Enregistrer</button>
+     </div>
    </div>
  </div>
 </div>
@@ -155,7 +166,7 @@ const SPORTS=[
 
 let entries={},instructions={};
 let currentDate=new Date();
-let editKey=null,statPeriod='all',calView='month';
+let editKey=null, editIdx=null, statPeriod='all',calView='month';
 let weekOffset=0;
 
 function save(){try{localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions));}catch(e){}}
@@ -252,24 +263,55 @@ function openModal(k){
  editKey=k;
  const d=new Date(k+'T12:00:00');
  document.getElementById('modal-title').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+ renderEntriesList();
+ hideForm();
+ document.getElementById('modal-bg').classList.add('open');
+}
+
+function renderEntriesList(){
+ const list=document.getElementById('entries-list');
+ const dayE=entries[editKey]||[];
+ list.innerHTML=dayE.map((e,i)=>{
+   const sp=SPORTS.find(s=>s.id===e.sport);
+   return `<div class="entry-item" onclick="showForm(${i})">
+     <div style="color:${sp.color};font-size:14px">
+       ${sp.icon} ${sp.name} ${sp.hasKm && e.km ? '· '+e.km+'km' : ''}
+       ${e.type==='planned' ? '<span style="opacity:0.5;font-size:11px"> (Planifié)</span>' : ''}
+     </div>
+     <div style="color:var(--text3)">❯</div>
+   </div>`;
+ }).join('');
+}
+
+function showForm(idx = null){
+ editIdx = idx;
  const sel=document.getElementById('m-sport');
  sel.innerHTML=SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
- const existing=(entries[k]||[])[0];
- if(existing){
-   sel.value=existing.sport;
-   document.getElementById('m-type').value=existing.type||'done';
-   document.getElementById('m-km').value=existing.km||'';
-   document.getElementById('m-notes').value=existing.notes||'';
-   document.getElementById('btn-del').style.display='inline-block';
+ 
+ if(idx !== null){
+   const e = entries[editKey][idx];
+   sel.value = e.sport;
+   document.getElementById('m-type').value = e.type || 'done';
+   document.getElementById('m-km').value = e.km || '';
+   document.getElementById('m-notes').value = e.notes || '';
+   document.getElementById('btn-del').style.display = 'inline-block';
  } else {
-   document.getElementById('m-type').value='done';
-   document.getElementById('m-km').value='';
-   document.getElementById('m-notes').value='';
-   document.getElementById('btn-del').style.display='none';
+   document.getElementById('m-type').value = 'done';
+   document.getElementById('m-km').value = '';
+   document.getElementById('m-notes').value = '';
+   document.getElementById('btn-del').style.display = 'none';
  }
+ 
  updateKmField();
  sel.addEventListener('change',updateKmField);
- document.getElementById('modal-bg').classList.add('open');
+ document.getElementById('modal-list-view').style.display='none';
+ document.getElementById('modal-form-view').style.display='block';
+}
+
+function hideForm(){
+ document.getElementById('modal-list-view').style.display='block';
+ document.getElementById('modal-form-view').style.display='none';
+ editIdx = null;
 }
 
 function updateKmField(){
@@ -283,16 +325,27 @@ function closeModal(){document.getElementById('modal-bg').classList.remove('open
 function saveEntry(){
  if(!editKey)return;
  const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value);
- entries[editKey]=[{
+ const newEntry = {
    sport:document.getElementById('m-sport').value,
    type:document.getElementById('m-type').value,
    km:sp&&sp.hasKm?parseFloat(document.getElementById('m-km').value)||0:0,
    notes:document.getElementById('m-notes').value
- }];
- save();closeModal();renderCalendar();
+ };
+ 
+ if(!entries[editKey]) entries[editKey] = [];
+ if(editIdx !== null) entries[editKey][editIdx] = newEntry;
+ else entries[editKey].push(newEntry);
+ 
+ save(); hideForm(); renderEntriesList(); renderCalendar();
 }
 
-function deleteEntry(){if(!editKey)return;delete entries[editKey];save();closeModal();renderCalendar();}
+function deleteEntry(){
+ if(editKey && editIdx !== null){
+   entries[editKey].splice(editIdx, 1);
+   if(entries[editKey].length === 0) delete entries[editKey];
+   save(); hideForm(); renderEntriesList(); renderCalendar();
+ }
+}
 
 function setPeriod(p,btn){
  statPeriod=p;
@@ -323,7 +376,7 @@ function renderStats(){
    const st=stats[s.id];
    const mainStat=s.hasKm
      ?`<div class="km" style="color:${s.color}">${st.km.toFixed(1)} km</div>`
-     :`<div class="km" style="color:${s.color}">${st.sessions} fois</div>`;
+     ?`<div class="km" style="color:${s.color}">${st.sessions} fois</div>`;
    return`<div class="stat-card">
      <div class="sport-icon">${s.icon}</div>
      <div class="sport-name">${s.name}</div>

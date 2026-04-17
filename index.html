@@ -52,7 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .rec-item{display:flex;justify-content:space-between;margin-top:8px;font-size:13px}
 .rec-val{color:var(--accent);font-weight:600}
 
-/* Instructions (Original Design) */
+/* Instructions */
 .instr-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:0.85rem 1rem;margin-bottom:10px}
 .instr-card h3{font-size:14px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .instr-card textarea{width:100%;font-size:13px;color:var(--text1);background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px;resize:vertical;min-height:80px;font-family:inherit}
@@ -64,6 +64,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .field{margin-bottom:12px}
 .field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
 .field input, .field select{width:100%;min-height:46px;background:var(--bg2);color:var(--text1);border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:15px}
+.list-entry{background:var(--bg2);padding:12px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.list-entry:active{opacity:0.7}
 </style>
 </head>
 <body>
@@ -130,11 +132,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 <div class="modal-bg" id="modal-bg" onclick="if(event.target.id==='modal-bg')closeModal()">
  <div class="modal">
    <h3 id="modal-title" style="margin-bottom:15px">Détails</h3>
+   
    <div id="view-list">
      <div id="list-container"></div>
      <button onclick="showForm()" style="width:100%; padding:15px; background:none; border:1px dashed var(--border2); color:var(--text2); border-radius:8px; margin:10px 0; cursor:pointer">+ Ajouter une séance</button>
      <button onclick="closeModal()" style="width:100%;background:none;border:none;color:var(--text3);padding:10px">Fermer</button>
    </div>
+
    <div id="view-form" style="display:none">
      <div class="field"><label>Sport</label><select id="m-sport"></select></div>
      <div class="field" id="km-box"><label>Distance (km)</label><input type="number" id="m-km" step="0.01" inputmode="decimal"></div>
@@ -142,6 +146,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
      <div class="field"><label>Notes</label><input type="text" id="m-notes"></div>
      <div style="display:flex; gap:8px; margin-top:1.5rem">
        <button class="f-btn" style="padding:12px 20px" onclick="hideForm()">Retour</button>
+       <button id="btn-delete-form" class="f-btn" style="color:#f87171; border-color:#f87171; display:none" onclick="deleteEntryFromForm()">Suppr.</button>
        <button style="flex:1; background:var(--text1); color:var(--bg0); border:none; border-radius:8px; font-weight:600; cursor:pointer" onclick="saveEntry()">Enregistrer</button>
      </div>
    </div>
@@ -163,7 +168,7 @@ let entries = JSON.parse(localStorage.getItem('ft2_e') || '{}');
 let instructions = JSON.parse(localStorage.getItem('ft2_i') || '{}');
 let recordsManual = JSON.parse(localStorage.getItem('ft2_rm') || '{}');
 let weeklyGoal = JSON.parse(localStorage.getItem('ft2_goal') || '30');
-let currentDate = new Date(), statPeriod = 'all', editKey = null;
+let currentDate = new Date(), statPeriod = 'all', editKey = null, editIdx = null;
 
 function save(){ 
     localStorage.setItem('ft2_e', JSON.stringify(entries)); 
@@ -172,7 +177,6 @@ function save(){
     localStorage.setItem('ft2_goal', JSON.stringify(weeklyGoal));
 }
 
-// IMPORT / EXPORT FUNCTIONS
 function exportData(){
   const b=new Blob([JSON.stringify({entries,instructions,recordsManual,weeklyGoal})],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`fitness_backup_${new Date().toISOString().slice(0,10)}.json`; a.click();
@@ -238,11 +242,7 @@ function renderHeatmap(){
 }
 
 function setStatPeriod(p, btn){ statPeriod=p; document.querySelectorAll('#stats .f-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderStats(); }
-
-function updateWeeklyGoal(){
-    const res = prompt("Objectif hebdo (km) :", weeklyGoal);
-    if(res && !isNaN(res)){ weeklyGoal = parseFloat(res); save(); renderStats(); }
-}
+function updateWeeklyGoal(){ const res = prompt("Objectif hebdo (km) :", weeklyGoal); if(res && !isNaN(res)){ weeklyGoal = parseFloat(res); save(); renderStats(); } }
 
 function renderStats(){
   let streak=0, d=new Date(), lastWasSkip=false;
@@ -256,12 +256,10 @@ function renderStats(){
     d.setDate(d.getDate()-1);
   }
   document.getElementById('streak-val').innerText = streak;
-
   let wKm=0; const now=new Date(); const mon = new Date(); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
   Object.entries(entries).forEach(([k, day])=>{ if(new Date(k) >= mon) day.forEach(e=>{ if(e.sport!=='skip') wKm+=e.km||0 }); });
   document.getElementById('goal-val').innerText = `${wKm.toFixed(1)} / ${weeklyGoal} km`;
   document.getElementById('goal-bar').style.width = Math.min(100, (wKm/weeklyGoal)*100) + '%';
-
   const sObj={}; SPORTS.forEach(s=>sObj[s.id]={k:0, t:0, n:0});
   Object.entries(entries).forEach(([k, day])=>{
       const dk = new Date(k); if(statPeriod==='month' && dk.getMonth()!==now.getMonth()) return;
@@ -298,25 +296,77 @@ function renderInstructions(){
   document.getElementById('instr-list').innerHTML=SPORTS.map(s=>`<div class="instr-card"><h3>${s.icon} <span style="color:${s.color}">${s.name}</span></h3><textarea oninput="instructions['${s.id}']=this.value; save()">${instructions[s.id]||''}</textarea></div>`).join('');
 }
 
-function openModal(k){ editKey=k; const d=new Date(k+'T12:00:00'); document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d); renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open'); }
+// MODIFICATION DES SEANCES EXISTANTES
+function openModal(k){ 
+    editKey=k; const d=new Date(k+'T12:00:00'); 
+    document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d); 
+    renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open'); 
+}
+
 function renderEntriesList(){
     const list=entries[editKey]||[];
-    document.getElementById('list-container').innerHTML=list.map((e,i)=>`<div style="background:var(--bg2);padding:12px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between"><span>${SPORTS.find(s=>s.id===e.sport).icon} ${e.km?e.km+'km':''} ${e.time?e.time+'m':''}</span><button onclick="deleteEntry(${i})" style="background:none;border:none;color:#f87171">✕</button></div>`).join('');
+    document.getElementById('list-container').innerHTML=list.map((e,i)=>`
+        <div class="list-entry" onclick="showForm(${i})">
+            <span style="font-size:14px">${SPORTS.find(s=>s.id===e.sport).icon} ${e.km?e.km+'km':''} ${e.time?e.time+'m':''}</span>
+            <span style="color:var(--text3); font-size:12px">Modifier ❯</span>
+        </div>`).join('');
 }
-function showForm(){
-    document.getElementById('m-km').value=''; document.getElementById('m-time').value=''; document.getElementById('m-notes').value='';
-    const sel = document.getElementById('m-sport'); sel.innerHTML = SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
-    sel.onchange = updateFields; updateFields(); document.getElementById('view-list').style.display='none'; document.getElementById('view-form').style.display='block';
+
+function showForm(idx = null){
+    editIdx = idx;
+    const btnDelete = document.getElementById('btn-delete-form');
+    
+    if(idx !== null){
+        // MODE EDITION
+        const e = entries[editKey][idx];
+        document.getElementById('m-sport').innerHTML = SPORTS.map(s=>`<option value="${s.id}" ${s.id===e.sport?'selected':''}>${s.icon} ${s.name}</option>`).join('');
+        document.getElementById('m-km').value = e.km || '';
+        document.getElementById('m-time').value = e.time || '';
+        document.getElementById('m-notes').value = e.notes || '';
+        btnDelete.style.display = 'block';
+    } else {
+        // MODE NOUVELLE SEANCE
+        document.getElementById('m-km').value=''; document.getElementById('m-time').value=''; document.getElementById('m-notes').value='';
+        document.getElementById('m-sport').innerHTML = SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+        btnDelete.style.display = 'none';
+    }
+    
+    document.getElementById('m-sport').onchange = updateFields; 
+    updateFields(); 
+    document.getElementById('view-list').style.display='none'; 
+    document.getElementById('view-form').style.display='block';
 }
+
 function updateFields(){ const s = SPORTS.find(sp=>sp.id===document.getElementById('m-sport').value); document.getElementById('km-box').style.display = s.hasKm ? 'block' : 'none'; document.getElementById('time-box').style.display = s.hasTime ? 'block' : 'none'; }
 function hideForm(){ document.getElementById('view-list').style.display='block'; document.getElementById('view-form').style.display='none'; }
 function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+
 function saveEntry(){
-    const sId = document.getElementById('m-sport').value, km = parseFloat(document.getElementById('m-km').value) || 0, time = parseFloat(document.getElementById('m-time').value) || 0;
-    if(!entries[editKey]) entries[editKey]=[]; entries[editKey].push({sport:sId, km, time, notes:document.getElementById('m-notes').value});
+    const sId = document.getElementById('m-sport').value;
+    const km = parseFloat(document.getElementById('m-km').value) || 0;
+    const time = parseFloat(document.getElementById('m-time').value) || 0;
+    const notes = document.getElementById('m-notes').value;
+
+    if(!entries[editKey]) entries[editKey]=[];
+    
+    const entryData = {sport:sId, km, time, notes};
+    
+    if(editIdx !== null) {
+        entries[editKey][editIdx] = entryData; // Modification
+    } else {
+        entries[editKey].push(entryData); // Ajout
+    }
+
     save(); hideForm(); renderEntriesList(); renderCalendar(); renderHeatmap();
 }
-function deleteEntry(i){ entries[editKey].splice(i,1); if(!entries[editKey].length)delete entries[editKey]; save(); renderEntriesList(); renderCalendar(); renderHeatmap(); }
+
+function deleteEntryFromForm(){
+    if(editIdx !== null) {
+        entries[editKey].splice(editIdx, 1);
+        if(!entries[editKey].length) delete entries[editKey];
+        save(); hideForm(); renderEntriesList(); renderCalendar(); renderHeatmap();
+    }
+}
 
 renderCalendar();
 </script>

@@ -346,7 +346,14 @@ function showForm(idx=null){
   document.getElementById('view-form').style.display='block';
 }
 function hideForm(){ document.getElementById('view-list').style.display='block'; document.getElementById('view-form').style.display='none'; }
-function updateKmField(){ const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value); document.getElementById('km-box').style.display=sp.hasKm?'block':'none'; }
+function updateKmField(){ 
+  const sportId = document.getElementById('m-sport').value;
+  const sp = SPORTS.find(s=>s.id === sportId); 
+  document.getElementById('km-box').style.display = sp.hasKm ? 'block' : 'none';
+  
+  // Cache le type si c'est un Joker (car c'est toujours "done" techniquement mais spécial)
+  document.getElementById('m-type').parentElement.style.display = (sportId === 'skip') ? 'none' : 'block';
+}
 function bgClick(e){ if(e.target.id==='modal-bg') closeModal(); }
 function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
 

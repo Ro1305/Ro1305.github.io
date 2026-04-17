@@ -3,83 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fitness Tracker</title>
+<title>Fitness Tracker Pro</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
  --bg0:#1a1a1a;--bg1:#242424;--bg2:#2e2e2e;
  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.2);
  --text1:#f0f0f0;--text2:#a0a0a0;--text3:#666;
+ --accent:#60a5fa;
+ --level0: #2e2e2e; --level1: #0e4429; --level2: #006d32; --level3: #26a641; --level4: #39d353;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text1);background:var(--bg0);min-height:100vh}
 .app{max-width:600px;margin:0 auto;padding:0.75rem}
 .tabs{display:flex;gap:4px;margin-bottom:1rem;border-bottom:0.5px solid var(--border);padding-bottom:0}
-.tab{flex:1;padding:8px 4px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-0.5px;text-align:center}
+.tab{flex:1;padding:12px 4px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-0.5px;text-align:center}
 .tab.active{color:var(--text1);border-bottom:2px solid var(--text1);font-weight:500}
 .section{display:none}.section.active{display:block}
 
-/* Légende et Header */
-.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
-.cal-nav{background:none;border:0.5px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:16px;color:var(--text1);min-width:44px;min-height:44px}
-.view-toggle{display:flex;gap:6px}
-.vt-btn{background:none;border:0.5px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;color:var(--text2)}
-.vt-btn.active{background:var(--bg2);color:var(--text1);border-color:var(--border2)}
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-/* Grille Calendrier */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal-dow{text-align:center;font-size:11px;color:var(--text2);padding:3px 0;font-weight:500}
-.cal-day{min-height:52px;border:0.5px solid var(--border);border-radius:6px;padding:3px;cursor:pointer;background:var(--bg1)}
-.cal-day.today{border-color:rgba(255,255,255,0.4)}
-.cal-day .day-num{font-size:11px;color:var(--text2)}
-.cal-day.today .day-num{font-weight:500;color:var(--text1)}
-.sport-badge[style*="#666666"] {
-    border: 1px dashed var(--border2);
-    font-style: italic;
-    opacity: 0.8;
-}
-.planned{opacity:0.55}
-.note-dot{display:inline-block;width:3px;height:3px;background:currentColor;border-radius:50%;margin-left:2px;vertical-align:middle}
-
-/* Widgets Motivation */
+/* Widgets Stats */
 .widgets-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
-.widget-card{background:var(--bg1);border-radius:10px;padding:12px;border:0.5px solid var(--border)}
-.w-label{font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:4px}
-.w-val{font-size:18px;font-weight:600}
-.progress-bg{height:4px;background:var(--bg2);border-radius:2px;margin-top:8px;overflow:hidden}
-.progress-fill{height:100%;background:#60a5fa;transition:width 0.3s}
+.widget-card{background:var(--bg1);border-radius:12px;padding:15px;border:0.5px solid var(--border);position:relative}
+.w-label{font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.5px}
+.w-val{font-size:22px;font-weight:700}
+.progress-bg{height:6px;background:var(--bg2);border-radius:3px;margin-top:10px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);transition:width 0.4s ease}
+.edit-goal{position:absolute;top:12px;right:12px;font-size:10px;color:var(--accent);text-decoration:underline;cursor:pointer}
 
-/* Stats */
-.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
-.stat-card{background:var(--bg1);border-radius:8px;padding:0.85rem;border:0.5px solid var(--border)}
-.stat-card .sport-icon{font-size:20px;margin-bottom:4px}
-.stat-card .sport-name{font-size:12px;color:var(--text2);margin-bottom:3px}
-.stat-card .km{font-size:20px;font-weight:500}
-.stat-card .sessions{font-size:11px;color:var(--text2);margin-top:2px}
+/* Heatmap Style */
+.heatmap-container{background:var(--bg1);border-radius:12px;padding:15px;border:0.5px solid var(--border);margin-bottom:15px; overflow-x: auto;}
+.heatmap-grid{display: flex; gap: 3px; min-width: 500px;}
+.heatmap-week{display: flex; flex-direction: column; gap: 3px;}
+.hm-day{width: 10px; height: 10px; border-radius: 2px; background: var(--level0);}
+.hm-level-1{background: var(--level1);}
+.hm-level-2{background: var(--level2);}
+.hm-level-3{background: var(--level3);}
+.hm-level-4{background: var(--level4);}
+.hm-skip{background: #555;}
 
-/* Modal Originale */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:flex-end;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:var(--bg1);border-radius:12px 12px 0 0;padding:1.25rem;width:100%;max-width:600px;border-top:0.5px solid var(--border);padding-bottom:calc(1.25rem + env(safe-area-inset-bottom,0px))}
-.modal h3{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--text1)}
-.field{margin-bottom:10px}
-.field label{font-size:12px;color:var(--text2);display:block;margin-bottom:3px}
-.field select,.field input{width:100%;font-size:15px;min-height:40px;background:var(--bg2);color:var(--text1);border:0.5px solid var(--border);border-radius:8px;padding:0 10px}
-.modal-actions{display:flex;gap:8px;margin-top:1rem}
-.btn-del{background:none;border:0.5px solid #A32D2D;color:#f87171;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px}
-.btn-save{flex:1;background:var(--text1);border:none;color:var(--bg0);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;min-height:44px;font-weight:500}
-.btn-cancel{background:none;border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text2);min-height:44px}
-.btn-add-list{width:100%;background:none;border:1px dashed var(--border2);color:var(--text2);border-radius:8px;padding:12px;cursor:pointer;margin-bottom:10px;font-size:13px}
-.list-entry{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:10px 14px;border-radius:8px;margin-bottom:8px;cursor:pointer}
+/* Calendrier & Grilles */
+.f-btn{background:none;border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer}
+.f-btn.active{background:var(--bg2);color:var(--text1);border-color:var(--border2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day{min-height:58px;border:0.5px solid var(--border);border-radius:6px;padding:4px;cursor:pointer;background:var(--bg1)}
+.cal-day.today{border-color:rgba(255,255,255,0.4)}
+.day-num{font-size:11px;color:var(--text2);margin-bottom:2px}
+.sport-badge{font-size:9px;padding:2px 4px;border-radius:4px;margin-bottom:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-card{background:var(--bg1);border-radius:10px;padding:12px;border:0.5px solid var(--border)}
+
+/* Records */
+.rec-item{display:flex;justify-content:space-between;margin-top:8px;font-size:13px}
+.rec-val{color:var(--accent);font-weight:600}
 
 /* Instructions */
 .instr-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:0.85rem 1rem;margin-bottom:10px}
 .instr-card h3{font-size:14px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .instr-card textarea{width:100%;font-size:13px;color:var(--text1);background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px;resize:vertical;min-height:80px;font-family:inherit}
-.pf-btn{flex:1;background:none;border:0.5px solid var(--border);border-radius:8px;padding:7px 4px;cursor:pointer;font-size:12px;color:var(--text2);min-height:36px}
-.pf-btn.active{background:var(--bg2);color:var(--text1);border-color:var(--border2)}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg1);border-radius:16px 16px 0 0;padding:1.5rem;width:100%;max-width:600px;padding-bottom:calc(1.5rem + env(safe-area-inset-bottom,0px))}
+.field{margin-bottom:12px}
+.field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
+.field input, .field select{width:100%;min-height:46px;background:var(--bg2);color:var(--text1);border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:15px}
+.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
+.btn-save{flex:1;background:var(--text1);color:var(--bg0);border:none;border-radius:8px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -88,78 +76,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
  <div class="tabs">
    <button class="tab active" onclick="showTab('calendar')">Calendrier</button>
    <button class="tab" onclick="showTab('stats')">Stats</button>
-   <button class="tab" onclick="showTab('instructions')">Instructions</button>
+   <button class="tab" onclick="showTab('records')">Records</button>
+   <button class="tab" onclick="showTab('instructions')">Note</button>
  </div>
 
  <div id="calendar" class="section active">
-   <div class="cal-header">
-     <button class="cal-nav" onclick="changeMonth(-1)">&#8592;</button>
-     <span id="month-label" style="font-size:15px;font-weight:500"></span>
-     <button class="cal-nav" onclick="changeMonth(1)">&#8594;</button>
+   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+     <button class="f-btn" onclick="changeMonth(-1)">&#8592;</button>
+     <span id="month-label" style="font-weight:600"></span>
+     <button class="f-btn" onclick="changeMonth(1)">&#8594;</button>
    </div>
-   <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
-     <div class="view-toggle">
-       <button class="vt-btn active" id="vt-month" onclick="setView('month')">Mois</button>
-       <button class="vt-btn" id="vt-week" onclick="setView('week')">Semaine</button>
-     </div>
-   </div>
-   <div class="legend" id="legend"></div>
    <div id="cal-container"></div>
  </div>
 
  <div id="stats" class="section">
    <div class="widgets-row">
      <div class="widget-card">
-       <div class="w-label">Série actuelle</div>
+       <div class="w-label">Série Actuelle</div>
        <div class="w-val">🔥 <span id="streak-val">0</span> jours</div>
      </div>
      <div class="widget-card">
+       <span class="edit-goal" onclick="updateWeeklyGoal()">Modifier</span>
        <div class="w-label">Objectif Semaine</div>
        <div class="w-val" id="goal-val">0 / 30 km</div>
        <div class="progress-bg"><div id="goal-bar" class="progress-fill" style="width:0%"></div></div>
      </div>
    </div>
 
-   <div class="period-filter" style="display:flex;gap:6px;margin-bottom:1rem">
-     <button class="pf-btn active" onclick="setPeriod('all',this)">Tout</button>
-     <button class="pf-btn" onclick="setPeriod('month',this)">Ce mois</button>
-     <button class="pf-btn" onclick="setPeriod('week',this)">Semaine</button>
+   <div class="w-label" style="margin-bottom: 8px;">Activité Annuelle</div>
+   <div class="heatmap-container">
+      <div id="heatmap-grid" class="heatmap-grid"></div>
    </div>
-   <div class="stat-grid" id="stat-grid"></div>
-   
-   <div class="stat-card" style="grid-column: span 2; margin-top: 10px;">
-     <div style="font-size:12px; color:var(--text2); margin-bottom:10px">Sauvegarde externe</div>
-     <div style="display:flex; gap:8px">
-       <button class="pf-btn" onclick="exportData()">Exporter</button>
-       <button class="pf-btn" onclick="document.getElementById('fileIn').click()">Importer</button>
-     </div>
-     <input type="file" id="fileIn" style="display:none" onchange="importData(event)" accept=".json">
+
+   <div style="display:flex;gap:6px;margin-bottom:1rem">
+     <button class="f-btn active" onclick="setStatPeriod('all', this)">Tout</button>
+     <button class="f-btn" onclick="setStatPeriod('month', this)">Ce mois</button>
+     <button class="f-btn" onclick="setStatPeriod('week', this)">Semaine</button>
    </div>
+   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="stat-grid"></div>
+ </div>
+
+ <div id="records" class="section">
+    <div style="font-size:12px; color:var(--text3); margin-bottom:10px;">RECORDS AUTOMATIQUES</div>
+    <div id="auto-records" style="display:grid;gap:8px"></div>
+    <div style="margin:20px 0 10px;font-size:12px;color:var(--text3)">RECORDS MANUELS</div>
+    <div id="manual-records" style="display:grid;gap:8px"></div>
  </div>
 
  <div id="instructions" class="section">
-   <div class="instr-list" id="instr-list"></div>
+   <div id="instr-list"></div>
  </div>
 </div>
 
-<div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
+<div class="modal-bg" id="modal-bg" onclick="if(event.target.id==='modal-bg')closeModal()">
  <div class="modal">
-   <h3 id="modal-title">Détails</h3>
-   
+   <h3 id="modal-title" style="margin-bottom:15px">Détails</h3>
    <div id="view-list">
      <div id="list-container"></div>
-     <button class="btn-add-list" onclick="showForm()">+ Ajouter un sport</button>
-     <button class="btn-cancel" style="width:100%" onclick="closeModal()">Fermer</button>
+     <button onclick="showForm()" style="width:100%; padding:15px; background:none; border:1px dashed var(--border2); color:var(--text2); border-radius:8px; margin:10px 0; cursor:pointer">+ Ajouter une séance</button>
+     <button onclick="closeModal()" style="width:100%;background:none;border:none;color:var(--text3);padding:10px">Fermer</button>
    </div>
-
    <div id="view-form" style="display:none">
      <div class="field"><label>Sport</label><select id="m-sport"></select></div>
-     <div class="field"><label>Type</label><select id="m-type"><option value="done">Réalisée</option><option value="planned">Planifiée</option></select></div>
-     <div id="km-box" class="field"><label>Distance (km)</label><input type="number" id="m-km" step="0.1" inputmode="decimal"></div>
-     <div class="field"><label>Notes</label><input type="text" id="m-notes" placeholder="Optionnel"></div>
+     <div class="field" id="km-box"><label>Distance (km)</label><input type="number" id="m-km" step="0.01" inputmode="decimal"></div>
+     <div class="field" id="time-box"><label>Durée (minutes)</label><input type="number" id="m-time" step="1" inputmode="numeric"></div>
+     <div class="field"><label>Notes</label><input type="text" id="m-notes"></div>
      <div class="modal-actions">
-       <button class="btn-del" id="btn-del" onclick="deleteEntry()">Suppr.</button>
-       <button class="btn-cancel" onclick="hideForm()">Annuler</button>
+       <button class="f-btn" style="padding:12px 20px" onclick="hideForm()">Retour</button>
        <button class="btn-save" onclick="saveEntry()">Enregistrer</button>
      </div>
    </div>
@@ -168,215 +151,226 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 
 <script>
 const SPORTS=[
- {id:'run',name:'Course',icon:'🏃',color:'#D85A30',hasKm:true},
- {id:'bike',name:'Velo',icon:'🚴',color:'#1D9E75',hasKm:true},
- {id:'swim',name:'Natation',icon:'🏊',color:'#378ADD',hasKm:true},
- {id:'gym',name:'Muscu',icon:'💪',color:'#7F77DD',hasKm:false},
- {id:'walk',name:'Marche',icon:'🚶',color:'#BA7517',hasKm:true},
- {id:'climb',name:'Escalade',icon:'🧗',color:'#A32D2D',hasKm:false},
- // Ajoutez celle-ci :
- {id:'skip',name:'Joker',icon:'🃏',color:'#666666',hasKm:false} 
+ {id:'run',   name:'Course',   icon:'🏃', color:'#D85A30', hasKm:true,  hasTime:true,  isAuto:true},
+ {id:'bike',  name:'Velo',     icon:'🚴', color:'#1D9E75', hasKm:true,  hasTime:true,  isAuto:true},
+ {id:'walk',  name:'Marche',   icon:'🚶', color:'#BA7517', hasKm:true,  hasTime:true,  isAuto:true},
+ {id:'swim',  name:'Natation', icon:'🏊', color:'#378ADD', hasKm:true,  hasTime:true,  isAuto:false},
+ {id:'gym',   name:'Muscu',    icon:'💪', color:'#7F77DD', hasKm:false, hasTime:true,  isAuto:false},
+ {id:'climb', name:'Escalade', icon:'🧗', color:'#A32D2D', hasKm:false, hasTime:true,  isAuto:false},
+ {id:'skip',  name:'Joker',    icon:'🃏', color:'#666666', hasKm:false, hasTime:false, isAuto:false}
 ];
 
-let entries={},instructions={};
-let currentDate=new Date();
-let editKey=null, editIdx=null, statPeriod='all', calView='month', weekOffset=0;
+let entries = JSON.parse(localStorage.getItem('ft2_e') || '{}');
+let instructions = JSON.parse(localStorage.getItem('ft2_i') || '{}');
+let recordsManual = JSON.parse(localStorage.getItem('ft2_rm') || '{}');
+let weeklyGoal = JSON.parse(localStorage.getItem('ft2_goal') || '30');
 
-function key(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function today(){return key(new Date())}
+let currentDate = new Date();
+let statPeriod = 'all', editKey = null;
 
-function save(){localStorage.setItem('ft2_e',JSON.stringify(entries));localStorage.setItem('ft2_i',JSON.stringify(instructions))}
-function load(){
-  const e=localStorage.getItem('ft2_e'); if(e)entries=JSON.parse(e);
-  const i=localStorage.getItem('ft2_i'); if(i)instructions=JSON.parse(i);
-}
-
-function exportData(){
-  const b=new Blob([JSON.stringify({entries,instructions})],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`fitness_backup_${today()}.json`; a.click();
-}
-function importData(ev){
-  const f=ev.target.files[0]; if(!f)return;
-  const r=new FileReader(); r.onload=(e)=>{
-    const d=JSON.parse(e.target.result); entries=d.entries; instructions=d.instructions; save(); location.reload();
-  }; r.readAsText(f);
+function save(){ 
+    localStorage.setItem('ft2_e', JSON.stringify(entries)); 
+    localStorage.setItem('ft2_i', JSON.stringify(instructions));
+    localStorage.setItem('ft2_rm', JSON.stringify(recordsManual));
+    localStorage.setItem('ft2_goal', JSON.stringify(weeklyGoal));
 }
 
 function showTab(id){
- document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.innerText.toLowerCase().includes(id.slice(0,3))));
+ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.innerText.toLowerCase().includes(id.slice(0,3))));
  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
  document.getElementById(id).classList.add('active');
- if(id==='stats')renderStats();
- if(id==='instructions')renderInstructions();
+ if(id==='stats') { renderStats(); renderHeatmap(); }
+ if(id==='records') renderRecords();
+ if(id==='instructions') renderInstructions();
 }
 
-function setView(v){ calView=v; renderCalendar(); }
-function changeMonth(d){ if(calView==='month')currentDate.setMonth(currentDate.getMonth()+d); else weekOffset+=d; renderCalendar(); }
+function key(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function changeMonth(d){ currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
 
 function renderCalendar(){
  const container=document.getElementById('cal-container');
- const navLabel=document.getElementById('month-label');
- const tKey=today();
-
- // Mise à jour Légende
- document.getElementById('legend').innerHTML=SPORTS.map(s=>`<span class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${s.name}</span>`).join('');
- 
- if(calView==='month'){
-   const y=currentDate.getFullYear(), m=currentDate.getMonth();
-   navLabel.innerText=new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(currentDate);
-   let html='<div class="cal-grid"><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div><div class="cal-dow">Mer</div><div class="cal-dow">Jeu</div><div class="cal-dow">Ven</div><div class="cal-dow">Sam</div><div class="cal-dow">Dim</div>';
-   const first=(new Date(y,m,1).getDay()+6)%7;
-   const total=new Date(y,m+1,0).getDate();
-   for(let i=0;i<first;i++) html+='<div class="cal-day empty"></div>';
-   for(let d=1;d<=total;d++){
-     const k=key(new Date(y,m,d));
-     const list=entries[k]||[];
-     let badges='';
-     list.forEach(e=>{
-       const sp=SPORTS.find(s=>s.id===e.sport);
-       const dot=e.notes?'<span class="note-dot"></span>':'';
-       badges+=`<div class="sport-badge ${e.type==='planned'?'planned':''}" style="background:${sp.color}22;color:${sp.color}">${sp.hasKm&&e.km?e.km+'k':sp.name.slice(0,3)}${dot}</div>`;
-     });
-     html+=`<div class="cal-day ${k===tKey?'today':''}" onclick="openModal('${k}')"><div class="day-num">${d}</div>${badges}</div>`;
-   }
-   container.innerHTML=html+'</div>';
- } else {
-   const now=new Date(); const mon=new Date(now); 
-   mon.setDate(now.getDate()-((now.getDay()+6)%7)+weekOffset*7);
-   navLabel.innerText="Semaine du "+mon.getDate()+"/"+(mon.getMonth()+1);
-   let html='<div style="display:flex; flex-direction:column; gap:6px">';
-   for(let i=0;i<7;i++){
-     const d=new Date(mon); d.setDate(mon.getDate()+i); const k=key(d);
-     const list=entries[k]||[];
+ const y=currentDate.getFullYear(), m=currentDate.getMonth();
+ document.getElementById('month-label').innerText = new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(currentDate);
+ let html='<div class="cal-grid"><div class="cal-dow">Lu</div><div class="cal-dow">Ma</div><div class="cal-dow">Me</div><div class="cal-dow">Je</div><div class="cal-dow">Ve</div><div class="cal-dow">Sa</div><div class="cal-dow">Di</div>';
+ const first=(new Date(y,m,1).getDay()+6)%7;
+ const total=new Date(y,m+1,0).getDate();
+ for(let i=0;i<first;i++) html+='<div class="cal-day" style="background:none;border:none"></div>';
+ for(let d=1;d<=total;d++){
+     const k=key(new Date(y,m,d)); const list=entries[k]||[];
      let badges=list.map(e=>{
-       const sp=SPORTS.find(s=>s.id===e.sport);
-       return `<span class="sport-badge" style="background:${sp.color}22; color:${sp.color}; padding:4px 8px; font-size:11px">${sp.name} ${e.km?e.km+'k':''}</span>`;
-     }).join(' ');
-     html+=`<div class="stat-card ${k===tKey?'today':''}" style="display:flex; justify-content:space-between; align-items:center; min-height:52px" onclick="openModal('${k}')">
-       <div style="text-align:center; min-width:40px"><div style="font-size:10px; color:var(--text2)">${new Intl.DateTimeFormat('fr-FR',{weekday:'short'}).format(d)}</div><div style="font-size:16px; font-weight:600">${d.getDate()}</div></div>
-       <div style="flex:1; text-align:right">${badges || '<span style="color:var(--text3);font-size:11px">Repos</span>'}</div>
-     </div>`;
-   }
-   container.innerHTML=html+'</div>';
+         const s=SPORTS.find(sp=>sp.id===e.sport);
+         return `<span class="sport-badge" style="background:${s.color}22;color:${s.color}">${s.icon} ${e.km||e.time||''}</span>`;
+     }).join('');
+     html+=`<div class="cal-day ${k===key(new Date())?'today':''}" onclick="openModal('${k}')"><div class="day-num">${d}</div>${badges}</div>`;
  }
+ container.innerHTML=html+'</div>';
+}
+
+function renderHeatmap(){
+    const grid = document.getElementById('heatmap-grid');
+    grid.innerHTML = '';
+    const now = new Date();
+    const startDate = new Date();
+    startDate.setFullYear(now.getFullYear() - 1);
+    // Ajuster au début de la semaine (Lundi)
+    startDate.setDate(startDate.getDate() - ((startDate.getDay() + 6) % 7));
+
+    let html = '';
+    let curr = new Date(startDate);
+    
+    while(curr <= now){
+        if(curr.getDay() === 1) html += '<div class="heatmap-week">';
+        
+        const k = key(curr);
+        const dayEntries = entries[k] || [];
+        const activityCount = dayEntries.filter(e => e.sport !== 'skip').length;
+        const hasSkip = dayEntries.some(e => e.sport === 'skip');
+        
+        let level = 0;
+        if(activityCount > 0) level = Math.min(activityCount, 4);
+        
+        let classList = 'hm-day';
+        if(hasSkip && activityCount === 0) classList += ' hm-skip';
+        else if(level > 0) classList += ` hm-level-${level}`;
+        
+        html += `<div class="${classList}" title="${k} : ${activityCount} séance(s)"></div>`;
+        
+        if(curr.getDay() === 0) html += '</div>';
+        curr.setDate(curr.getDate() + 1);
+    }
+    grid.innerHTML = html;
+    // Scroll auto vers la fin
+    const container = document.querySelector('.heatmap-container');
+    container.scrollLeft = container.scrollWidth;
+}
+
+function setStatPeriod(p, btn){ 
+    statPeriod=p; document.querySelectorAll('#stats .f-btn').forEach(b=>b.classList.remove('active')); 
+    btn.classList.add('active'); renderStats(); 
+}
+
+function updateWeeklyGoal(){
+    const res = prompt("Objectif hebdo (km) :", weeklyGoal);
+    if(res && !isNaN(res)){ weeklyGoal = parseFloat(res); save(); renderStats(); }
 }
 
 function renderStats(){
-  const now = new Date();
-  
-  // --- LOGIQUE DE SÉRIE CORRIGÉE ---
-  let streak = 0; 
-  let d = new Date();
-  let lastWasSkip = false; 
-
-  // On vérifie si aujourd'hui est vide pour savoir d'où partir
-  const todayEntries = entries[key(d)] || [];
-  const todayHasActivity = todayEntries.some(e => e.type === 'done' || e.sport === 'skip');
-  
-  if (!todayHasActivity) d.setDate(d.getDate() - 1);
-
-  while (true) {
-    const dayEntries = entries[key(d)] || [];
-    // IMPORTANT : Une activité "faite" ne doit PAS être un joker
-    const hasDone = dayEntries.some(e => e.type === 'done' && e.sport !== 'skip');
-    const hasSkip = dayEntries.some(e => e.sport === 'skip');
-
-    if (hasDone) {
-      streak++;
-      lastWasSkip = false; 
-    } else if (hasSkip) {
-      if (lastWasSkip) {
-        // DEUXIÈME JOKER CONSÉCUTIF : On arrête la série ici
-        break;
-      }
-      // Premier joker : on continue de remonter sans augmenter le compteur streak
-      lastWasSkip = true; 
-    } else {
-      // Jour vide : fin de la série
-      break;
-    }
-    d.setDate(d.getDate() - 1);
+  let streak=0, d=new Date(), lastWasSkip=false;
+  while(true){
+    const day=entries[key(d)]||[];
+    const hasSport = day.some(e=>e.sport!=='skip');
+    const hasSkip = day.some(e=>e.sport==='skip');
+    if(hasSport) { streak++; lastWasSkip=false; }
+    else if(hasSkip && !lastWasSkip) { lastWasSkip=true; }
+    else if(key(d) === key(new Date())) {} 
+    else break;
+    d.setDate(d.getDate()-1);
   }
   document.getElementById('streak-val').innerText = streak;
 
-  // --- LE RESTE DES STATS (Kilomètres, etc.) ---
-  let wKm=0; const mon=new Date(now); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
-  Object.entries(entries).forEach(([k,l])=>{ if(new Date(k)>=mon) l.forEach(e=>{if(e.type==='done' && e.sport!=='skip') wKm+=e.km||0}) });
-  document.getElementById('goal-val').innerText=`${wKm.toFixed(1)} / 30 km`;
-  document.getElementById('goal-bar').style.width=Math.min(100,(wKm/30)*100)+'%';
-
-  const sObj={}; SPORTS.forEach(s=>sObj[s.id]={k:0,n:0});
-  Object.entries(entries).forEach(([k,l])=>{
-    const dt=new Date(k);
-    if(statPeriod==='month' && dt.getMonth()!==now.getMonth()) return;
-    if(statPeriod==='week' && dt<mon) return;
-    l.forEach(e=>{ if(e.type==='done' && e.sport!=='skip'){ sObj[e.sport].k+=e.km||0; sObj[e.sport].n++; }});
+  let wKm=0; const now=new Date();
+  const mon = new Date(); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
+  Object.entries(entries).forEach(([k, day])=>{
+      if(new Date(k) >= mon) day.forEach(e=>{ if(e.sport!=='skip') wKm+=e.km||0 });
   });
-  document.getElementById('stat-grid').innerHTML=SPORTS.map(s=>{
-    const v=sObj[s.id]; if((v.n===0 && statPeriod!=='all') || s.id === 'skip') return '';
-    return `<div class="stat-card"><div class="sport-icon">${s.icon}</div><div class="sport-name">${s.name}</div><div class="km" style="color:${s.color}">${s.hasKm?v.k.toFixed(1)+' km':v.n+' fois'}</div><div class="sessions">${v.n} séances</div></div>`;
+  document.getElementById('goal-val').innerText = `${wKm.toFixed(1)} / ${weeklyGoal} km`;
+  document.getElementById('goal-bar').style.width = Math.min(100, (wKm/weeklyGoal)*100) + '%';
+
+  const sObj={}; SPORTS.forEach(s=>sObj[s.id]={k:0, t:0, n:0});
+  Object.entries(entries).forEach(([k, day])=>{
+      const dk = new Date(k);
+      if(statPeriod==='month' && dk.getMonth()!==now.getMonth()) return;
+      if(statPeriod==='week' && dk < mon) return;
+      day.forEach(e=>{ sObj[e.sport].k+=e.km||0; sObj[e.sport].t+=e.time||0; sObj[e.sport].n++; });
+  });
+
+  document.getElementById('stat-grid').innerHTML = SPORTS.filter(s=>s.id!=='skip').map(s=>{
+    const v=sObj[s.id]; if(v.n===0 && statPeriod!=='all') return '';
+    return `<div class="stat-card">
+        <div style="font-size:18px">${s.icon} ${s.name}</div>
+        <div style="font-size:16px;font-weight:700">${s.hasKm?v.k.toFixed(1)+' km':v.t+' min'}</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">${v.n} séance(s)</div>
+    </div>`;
   }).join('');
 }
 
-function openModal(k){
-  editKey=k; const d=new Date(k+'T12:00:00');
-  document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d);
-  renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open');
-}
-function renderEntriesList(){
-  const list=entries[editKey]||[];
-  document.getElementById('list-container').innerHTML=list.map((e,i)=>{
-    const sp=SPORTS.find(s=>s.id===e.sport);
-    return `<div class="list-entry" onclick="showForm(${i})"><div style="color:${sp.color}; font-weight:600">${sp.icon} ${sp.name} ${e.km?'· '+e.km+'k':''} ${e.type==='planned'?'(P)':''}</div><div>❯</div></div>`;
-  }).join('');
-}
-function showForm(idx=null){
-  editIdx=idx; const sel=document.getElementById('m-sport');
-  sel.innerHTML=SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
-  if(idx!==null){
-    const e=entries[editKey][idx]; sel.value=e.sport; document.getElementById('m-type').value=e.type;
-    document.getElementById('m-km').value=e.km||''; document.getElementById('m-notes').value=e.notes||'';
-    document.getElementById('btn-del').style.display='block';
-  } else {
-    document.getElementById('m-type').value='done'; document.getElementById('m-km').value='';
-    document.getElementById('m-notes').value=''; document.getElementById('btn-del').style.display='none';
-  }
-  updateKmField(); sel.onchange=updateKmField;
-  document.getElementById('view-list').style.display='none';
-  document.getElementById('view-form').style.display='block';
-}
-function hideForm(){ document.getElementById('view-list').style.display='block'; document.getElementById('view-form').style.display='none'; }
-function updateKmField(){ 
-  const sportId = document.getElementById('m-sport').value;
-  const sp = SPORTS.find(s=>s.id === sportId); 
-  document.getElementById('km-box').style.display = sp.hasKm ? 'block' : 'none';
-  
-  // Cache le type si c'est un Joker (car c'est toujours "done" techniquement mais spécial)
-  document.getElementById('m-type').parentElement.style.display = (sportId === 'skip') ? 'none' : 'block';
-}
-function bgClick(e){ if(e.target.id==='modal-bg') closeModal(); }
-function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+function renderRecords(){
+    const auto = { run:{dist:0, speed:0}, bike:{dist:0, speed:0}, walk:{dist:0, speed:0} };
+    Object.values(entries).flat().forEach(e=>{
+        if(auto[e.sport]){
+            if(e.km > auto[e.sport].dist) auto[e.sport].dist = e.km;
+            if(e.km > 0 && e.time > 0){
+                const speed = e.km / (e.time/60);
+                if(speed > auto[e.sport].speed) auto[e.sport].speed = speed;
+            }
+        }
+    });
 
-function saveEntry(){
-  const sp=SPORTS.find(s=>s.id===document.getElementById('m-sport').value);
-  const e={sport:sp.id, type:document.getElementById('m-type').value, km:sp.hasKm?parseFloat(document.getElementById('m-km').value)||0:0, notes:document.getElementById('m-notes').value};
-  if(!entries[editKey]) entries[editKey]=[];
-  if(editIdx!==null) entries[editKey][editIdx]=e; else entries[editKey].push(e);
-  save(); hideForm(); renderEntriesList(); renderCalendar();
+    document.getElementById('auto-records').innerHTML = Object.entries(auto).map(([id, val])=>{
+        const s = SPORTS.find(sp=>sp.id===id);
+        const pace = val.speed > 0 ? (id==='bike' ? `${val.speed.toFixed(1)} km/h` : `${Math.floor(60/val.speed)}'${String(Math.round(((60/val.speed)%1)*60)).padStart(2,'0')}/km`) : '-';
+        return `<div class="stat-card" style="margin-bottom:8px">
+            <div style="font-weight:600; color:${s.color}; margin-bottom:8px">${s.icon} ${s.name}</div>
+            <div class="rec-item"><span>Distance Max</span><span class="rec-val">${val.dist > 0 ? val.dist.toFixed(1)+' km' : '-'}</span></div>
+            <div class="rec-item"><span>Meilleur ${id==='bike'?'Vitesse':'Allure'}</span><span class="rec-val">${pace}</span></div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('manual-records').innerHTML = SPORTS.filter(s=>!s.isAuto && s.id!=='skip').map(s=>{
+        return `<div class="stat-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+            <span>${s.icon} ${s.name}</span>
+            <input style="background:var(--bg2);border:none;color:var(--text1);padding:6px;border-radius:6px;width:120px;text-align:right" 
+                   type="text" value="${recordsManual[s.id]||''}" onchange="recordsManual['${s.id}']=this.value; save()">
+        </div>`;
+    }).join('');
 }
-function deleteEntry(){ entries[editKey].splice(editIdx,1); if(!entries[editKey].length) delete entries[editKey]; save(); hideForm(); renderEntriesList(); renderCalendar(); }
-function setPeriod(p,btn){ statPeriod=p; document.querySelectorAll('.pf-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderStats(); }
 
 function renderInstructions(){
   document.getElementById('instr-list').innerHTML=SPORTS.map(s=>`
     <div class="instr-card">
       <h3>${s.icon} <span style="color:${s.color}">${s.name}</span></h3>
-      <textarea oninput="saveInstr('${s.id}',this.value)">${instructions[s.id]||''}</textarea>
+      <textarea oninput="instructions['${s.id}']=this.value; save()">${instructions[s.id]||''}</textarea>
     </div>`).join('');
 }
-let t; function saveInstr(id,v){ clearTimeout(t); t=setTimeout(()=>{instructions[id]=v; save();},500); }
 
-load(); renderCalendar();
+function openModal(k){
+    editKey=k; const d=new Date(k+'T12:00:00');
+    document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d);
+    renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open');
+}
+function renderEntriesList(){
+    const list=entries[editKey]||[];
+    document.getElementById('list-container').innerHTML=list.map((e,i)=>`
+        <div style="background:var(--bg2);padding:12px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between">
+            <span>${SPORTS.find(s=>s.id===e.sport).icon} ${e.km?e.km+'km':''} ${e.time?e.time+'m':''}</span>
+            <button onclick="deleteEntry(${i})" style="background:none;border:none;color:#f87171">✕</button>
+        </div>`).join('');
+}
+function showForm(){
+    document.getElementById('m-km').value=''; document.getElementById('m-time').value=''; document.getElementById('m-notes').value='';
+    const sel = document.getElementById('m-sport');
+    sel.innerHTML = SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+    sel.onchange = updateFields; updateFields();
+    document.getElementById('view-list').style.display='none'; document.getElementById('view-form').style.display='block';
+}
+function updateFields(){
+    const s = SPORTS.find(sp=>sp.id===document.getElementById('m-sport').value);
+    document.getElementById('km-box').style.display = s.hasKm ? 'block' : 'none';
+    document.getElementById('time-box').style.display = s.hasTime ? 'block' : 'none';
+}
+function hideForm(){ document.getElementById('view-list').style.display='block'; document.getElementById('view-form').style.display='none'; }
+function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+function saveEntry(){
+    const sId = document.getElementById('m-sport').value;
+    const km = parseFloat(document.getElementById('m-km').value) || 0;
+    const time = parseFloat(document.getElementById('m-time').value) || 0;
+    if(!entries[editKey]) entries[editKey]=[];
+    entries[editKey].push({sport:sId, km, time, notes:document.getElementById('m-notes').value});
+    save(); hideForm(); renderEntriesList(); renderCalendar(); renderHeatmap();
+}
+function deleteEntry(i){ entries[editKey].splice(i,1); if(!entries[editKey].length)delete entries[editKey]; save(); renderEntriesList(); renderCalendar(); renderHeatmap(); }
+
+renderCalendar();
 </script>
 </body>
 </html>

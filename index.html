@@ -29,7 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .progress-fill{height:100%;background:var(--accent);transition:width 0.4s ease}
 .edit-goal{position:absolute;top:12px;right:12px;font-size:10px;color:var(--accent);text-decoration:underline;cursor:pointer}
 
-/* Heatmap Style */
+/* Heatmap */
 .heatmap-container{background:var(--bg1);border-radius:12px;padding:15px;border:0.5px solid var(--border);margin-bottom:15px; overflow-x: auto;}
 .heatmap-grid{display: flex; gap: 3px; min-width: 500px;}
 .heatmap-week{display: flex; flex-direction: column; gap: 3px;}
@@ -40,7 +40,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .hm-level-4{background: var(--level4);}
 .hm-skip{background: #555;}
 
-/* Calendrier & Grilles */
+/* Calendrier & Stats */
 .f-btn{background:none;border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--text2);cursor:pointer}
 .f-btn.active{background:var(--bg2);color:var(--text1);border-color:var(--border2)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
@@ -49,12 +49,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .day-num{font-size:11px;color:var(--text2);margin-bottom:2px}
 .sport-badge{font-size:9px;padding:2px 4px;border-radius:4px;margin-bottom:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-card{background:var(--bg1);border-radius:10px;padding:12px;border:0.5px solid var(--border)}
-
-/* Records */
 .rec-item{display:flex;justify-content:space-between;margin-top:8px;font-size:13px}
 .rec-val{color:var(--accent);font-weight:600}
 
-/* Instructions */
+/* Instructions (Original Design) */
 .instr-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:0.85rem 1rem;margin-bottom:10px}
 .instr-card h3{font-size:14px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .instr-card textarea{width:100%;font-size:13px;color:var(--text1);background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:8px;resize:vertical;min-height:80px;font-family:inherit}
@@ -66,8 +64,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .field{margin-bottom:12px}
 .field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
 .field input, .field select{width:100%;min-height:46px;background:var(--bg2);color:var(--text1);border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:15px}
-.modal-actions{display:flex;gap:8px;margin-top:1.5rem}
-.btn-save{flex:1;background:var(--text1);color:var(--bg0);border:none;border-radius:8px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -77,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
    <button class="tab active" onclick="showTab('calendar')">Calendrier</button>
    <button class="tab" onclick="showTab('stats')">Stats</button>
    <button class="tab" onclick="showTab('records')">Records</button>
-   <button class="tab" onclick="showTab('instructions')">Note</button>
+   <button class="tab" onclick="showTab('instructions')">Instructions</button>
  </div>
 
  <div id="calendar" class="section active">
@@ -91,35 +87,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 
  <div id="stats" class="section">
    <div class="widgets-row">
-     <div class="widget-card">
-       <div class="w-label">Série Actuelle</div>
-       <div class="w-val">🔥 <span id="streak-val">0</span> jours</div>
-     </div>
+     <div class="widget-card"><div class="w-label">Série Actuelle</div><div class="w-val">🔥 <span id="streak-val">0</span> j</div></div>
      <div class="widget-card">
        <span class="edit-goal" onclick="updateWeeklyGoal()">Modifier</span>
-       <div class="w-label">Objectif Semaine</div>
-       <div class="w-val" id="goal-val">0 / 30 km</div>
+       <div class="w-label">Objectif Hebdo</div><div class="w-val" id="goal-val">0 / 30 km</div>
        <div class="progress-bg"><div id="goal-bar" class="progress-fill" style="width:0%"></div></div>
      </div>
    </div>
 
-   <div class="w-label" style="margin-bottom: 8px;">Activité Annuelle</div>
-   <div class="heatmap-container">
-      <div id="heatmap-grid" class="heatmap-grid"></div>
-   </div>
+   <div class="w-label" style="margin-bottom:8px">Activité Annuelle</div>
+   <div class="heatmap-container"><div id="heatmap-grid" class="heatmap-grid"></div></div>
 
    <div style="display:flex;gap:6px;margin-bottom:1rem">
      <button class="f-btn active" onclick="setStatPeriod('all', this)">Tout</button>
-     <button class="f-btn" onclick="setStatPeriod('month', this)">Ce mois</button>
+     <button class="f-btn" onclick="setStatPeriod('month', this)">Mois</button>
      <button class="f-btn" onclick="setStatPeriod('week', this)">Semaine</button>
    </div>
    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="stat-grid"></div>
+
+   <div class="stat-card" style="margin-top:20px; grid-column: span 2;">
+     <div class="w-label">Sauvegarde externe</div>
+     <div style="display:flex; gap:8px; margin-top:8px">
+       <button class="f-btn" style="flex:1" onclick="exportData()">Exporter</button>
+       <button class="f-btn" style="flex:1" onclick="document.getElementById('fileIn').click()">Importer</button>
+     </div>
+     <input type="file" id="fileIn" style="display:none" onchange="importData(event)" accept=".json">
+   </div>
  </div>
 
  <div id="records" class="section">
-    <div style="font-size:12px; color:var(--text3); margin-bottom:10px;">RECORDS AUTOMATIQUES</div>
+    <div class="w-label" style="margin-bottom:10px">RECORDS AUTOMATIQUES</div>
     <div id="auto-records" style="display:grid;gap:8px"></div>
-    <div style="margin:20px 0 10px;font-size:12px;color:var(--text3)">RECORDS MANUELS</div>
+    <div class="w-label" style="margin:20px 0 10px">RECORDS MANUELS</div>
     <div id="manual-records" style="display:grid;gap:8px"></div>
  </div>
 
@@ -139,11 +138,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
    <div id="view-form" style="display:none">
      <div class="field"><label>Sport</label><select id="m-sport"></select></div>
      <div class="field" id="km-box"><label>Distance (km)</label><input type="number" id="m-km" step="0.01" inputmode="decimal"></div>
-     <div class="field" id="time-box"><label>Durée (minutes)</label><input type="number" id="m-time" step="1" inputmode="numeric"></div>
+     <div class="field" id="time-box"><label>Durée (min)</label><input type="number" id="m-time" step="1" inputmode="numeric"></div>
      <div class="field"><label>Notes</label><input type="text" id="m-notes"></div>
-     <div class="modal-actions">
+     <div style="display:flex; gap:8px; margin-top:1.5rem">
        <button class="f-btn" style="padding:12px 20px" onclick="hideForm()">Retour</button>
-       <button class="btn-save" onclick="saveEntry()">Enregistrer</button>
+       <button style="flex:1; background:var(--text1); color:var(--bg0); border:none; border-radius:8px; font-weight:600; cursor:pointer" onclick="saveEntry()">Enregistrer</button>
      </div>
    </div>
  </div>
@@ -164,15 +163,27 @@ let entries = JSON.parse(localStorage.getItem('ft2_e') || '{}');
 let instructions = JSON.parse(localStorage.getItem('ft2_i') || '{}');
 let recordsManual = JSON.parse(localStorage.getItem('ft2_rm') || '{}');
 let weeklyGoal = JSON.parse(localStorage.getItem('ft2_goal') || '30');
-
-let currentDate = new Date();
-let statPeriod = 'all', editKey = null;
+let currentDate = new Date(), statPeriod = 'all', editKey = null;
 
 function save(){ 
     localStorage.setItem('ft2_e', JSON.stringify(entries)); 
     localStorage.setItem('ft2_i', JSON.stringify(instructions));
     localStorage.setItem('ft2_rm', JSON.stringify(recordsManual));
     localStorage.setItem('ft2_goal', JSON.stringify(weeklyGoal));
+}
+
+// IMPORT / EXPORT FUNCTIONS
+function exportData(){
+  const b=new Blob([JSON.stringify({entries,instructions,recordsManual,weeklyGoal})],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`fitness_backup_${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+function importData(ev){
+  const f=ev.target.files[0]; if(!f)return;
+  const r=new FileReader(); r.onload=(e)=>{
+    const d=JSON.parse(e.target.result); 
+    entries=d.entries||{}; instructions=d.instructions||{}; recordsManual=d.recordsManual||{}; weeklyGoal=d.weeklyGoal||30;
+    save(); location.reload();
+  }; r.readAsText(f);
 }
 
 function showTab(id){
@@ -207,47 +218,26 @@ function renderCalendar(){
 }
 
 function renderHeatmap(){
-    const grid = document.getElementById('heatmap-grid');
-    grid.innerHTML = '';
-    const now = new Date();
-    const startDate = new Date();
-    startDate.setFullYear(now.getFullYear() - 1);
-    // Ajuster au début de la semaine (Lundi)
+    const grid = document.getElementById('heatmap-grid'); grid.innerHTML = '';
+    const now = new Date(); const startDate = new Date(); startDate.setFullYear(now.getFullYear() - 1);
     startDate.setDate(startDate.getDate() - ((startDate.getDay() + 6) % 7));
-
-    let html = '';
-    let curr = new Date(startDate);
-    
+    let html = '', curr = new Date(startDate);
     while(curr <= now){
         if(curr.getDay() === 1) html += '<div class="heatmap-week">';
-        
-        const k = key(curr);
-        const dayEntries = entries[k] || [];
-        const activityCount = dayEntries.filter(e => e.sport !== 'skip').length;
-        const hasSkip = dayEntries.some(e => e.sport === 'skip');
-        
-        let level = 0;
-        if(activityCount > 0) level = Math.min(activityCount, 4);
-        
-        let classList = 'hm-day';
-        if(hasSkip && activityCount === 0) classList += ' hm-skip';
-        else if(level > 0) classList += ` hm-level-${level}`;
-        
-        html += `<div class="${classList}" title="${k} : ${activityCount} séance(s)"></div>`;
-        
+        const k = key(curr), dE = entries[k] || [];
+        const count = dE.filter(e => e.sport !== 'skip').length;
+        const skip = dE.some(e => e.sport === 'skip');
+        let lvl = count > 0 ? Math.min(count, 4) : 0;
+        let cls = 'hm-day' + (skip && count === 0 ? ' hm-skip' : (lvl > 0 ? ` hm-level-${lvl}` : ''));
+        html += `<div class="${cls}" title="${k}"></div>`;
         if(curr.getDay() === 0) html += '</div>';
         curr.setDate(curr.getDate() + 1);
     }
     grid.innerHTML = html;
-    // Scroll auto vers la fin
-    const container = document.querySelector('.heatmap-container');
-    container.scrollLeft = container.scrollWidth;
+    document.querySelector('.heatmap-container').scrollLeft = 9999;
 }
 
-function setStatPeriod(p, btn){ 
-    statPeriod=p; document.querySelectorAll('#stats .f-btn').forEach(b=>b.classList.remove('active')); 
-    btn.classList.add('active'); renderStats(); 
-}
+function setStatPeriod(p, btn){ statPeriod=p; document.querySelectorAll('#stats .f-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderStats(); }
 
 function updateWeeklyGoal(){
     const res = prompt("Objectif hebdo (km) :", weeklyGoal);
@@ -262,35 +252,25 @@ function renderStats(){
     const hasSkip = day.some(e=>e.sport==='skip');
     if(hasSport) { streak++; lastWasSkip=false; }
     else if(hasSkip && !lastWasSkip) { lastWasSkip=true; }
-    else if(key(d) === key(new Date())) {} 
-    else break;
+    else if(key(d) === key(new Date())) {} else break;
     d.setDate(d.getDate()-1);
   }
   document.getElementById('streak-val').innerText = streak;
 
-  let wKm=0; const now=new Date();
-  const mon = new Date(); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
-  Object.entries(entries).forEach(([k, day])=>{
-      if(new Date(k) >= mon) day.forEach(e=>{ if(e.sport!=='skip') wKm+=e.km||0 });
-  });
+  let wKm=0; const now=new Date(); const mon = new Date(); mon.setDate(now.getDate()-((now.getDay()+6)%7)); mon.setHours(0,0,0,0);
+  Object.entries(entries).forEach(([k, day])=>{ if(new Date(k) >= mon) day.forEach(e=>{ if(e.sport!=='skip') wKm+=e.km||0 }); });
   document.getElementById('goal-val').innerText = `${wKm.toFixed(1)} / ${weeklyGoal} km`;
   document.getElementById('goal-bar').style.width = Math.min(100, (wKm/weeklyGoal)*100) + '%';
 
   const sObj={}; SPORTS.forEach(s=>sObj[s.id]={k:0, t:0, n:0});
   Object.entries(entries).forEach(([k, day])=>{
-      const dk = new Date(k);
-      if(statPeriod==='month' && dk.getMonth()!==now.getMonth()) return;
+      const dk = new Date(k); if(statPeriod==='month' && dk.getMonth()!==now.getMonth()) return;
       if(statPeriod==='week' && dk < mon) return;
       day.forEach(e=>{ sObj[e.sport].k+=e.km||0; sObj[e.sport].t+=e.time||0; sObj[e.sport].n++; });
   });
-
   document.getElementById('stat-grid').innerHTML = SPORTS.filter(s=>s.id!=='skip').map(s=>{
     const v=sObj[s.id]; if(v.n===0 && statPeriod!=='all') return '';
-    return `<div class="stat-card">
-        <div style="font-size:18px">${s.icon} ${s.name}</div>
-        <div style="font-size:16px;font-weight:700">${s.hasKm?v.k.toFixed(1)+' km':v.t+' min'}</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px">${v.n} séance(s)</div>
-    </div>`;
+    return `<div class="stat-card"><div style="font-size:18px">${s.icon} ${s.name}</div><div style="font-size:16px;font-weight:700">${s.hasKm?v.k.toFixed(1)+' km':v.t+' min'}</div><div style="font-size:10px;color:var(--text2);margin-top:4px">${v.n} séance(s)</div></div>`;
   }).join('');
 }
 
@@ -300,72 +280,40 @@ function renderRecords(){
         if(auto[e.sport]){
             if(e.km > auto[e.sport].dist) auto[e.sport].dist = e.km;
             if(e.km > 0 && e.time > 0){
-                const speed = e.km / (e.time/60);
-                if(speed > auto[e.sport].speed) auto[e.sport].speed = speed;
+                const speed = e.km / (e.time/60); if(speed > auto[e.sport].speed) auto[e.sport].speed = speed;
             }
         }
     });
-
     document.getElementById('auto-records').innerHTML = Object.entries(auto).map(([id, val])=>{
         const s = SPORTS.find(sp=>sp.id===id);
         const pace = val.speed > 0 ? (id==='bike' ? `${val.speed.toFixed(1)} km/h` : `${Math.floor(60/val.speed)}'${String(Math.round(((60/val.speed)%1)*60)).padStart(2,'0')}/km`) : '-';
-        return `<div class="stat-card" style="margin-bottom:8px">
-            <div style="font-weight:600; color:${s.color}; margin-bottom:8px">${s.icon} ${s.name}</div>
-            <div class="rec-item"><span>Distance Max</span><span class="rec-val">${val.dist > 0 ? val.dist.toFixed(1)+' km' : '-'}</span></div>
-            <div class="rec-item"><span>Meilleur ${id==='bike'?'Vitesse':'Allure'}</span><span class="rec-val">${pace}</span></div>
-        </div>`;
+        return `<div class="stat-card" style="margin-bottom:8px"><div style="font-weight:600; color:${s.color}; margin-bottom:8px">${s.icon} ${s.name}</div><div class="rec-item"><span>Distance Max</span><span class="rec-val">${val.dist > 0 ? val.dist.toFixed(1)+' km' : '-'}</span></div><div class="rec-item"><span>Record Rythme</span><span class="rec-val">${pace}</span></div></div>`;
     }).join('');
-
     document.getElementById('manual-records').innerHTML = SPORTS.filter(s=>!s.isAuto && s.id!=='skip').map(s=>{
-        return `<div class="stat-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
-            <span>${s.icon} ${s.name}</span>
-            <input style="background:var(--bg2);border:none;color:var(--text1);padding:6px;border-radius:6px;width:120px;text-align:right" 
-                   type="text" value="${recordsManual[s.id]||''}" onchange="recordsManual['${s.id}']=this.value; save()">
-        </div>`;
+        return `<div class="stat-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px"><span>${s.icon} ${s.name}</span><input style="background:var(--bg2);border:none;color:var(--text1);padding:6px;border-radius:6px;width:120px;text-align:right" type="text" value="${recordsManual[s.id]||''}" onchange="recordsManual['${s.id}']=this.value; save()"></div>`;
     }).join('');
 }
 
 function renderInstructions(){
-  document.getElementById('instr-list').innerHTML=SPORTS.map(s=>`
-    <div class="instr-card">
-      <h3>${s.icon} <span style="color:${s.color}">${s.name}</span></h3>
-      <textarea oninput="instructions['${s.id}']=this.value; save()">${instructions[s.id]||''}</textarea>
-    </div>`).join('');
+  document.getElementById('instr-list').innerHTML=SPORTS.map(s=>`<div class="instr-card"><h3>${s.icon} <span style="color:${s.color}">${s.name}</span></h3><textarea oninput="instructions['${s.id}']=this.value; save()">${instructions[s.id]||''}</textarea></div>`).join('');
 }
 
-function openModal(k){
-    editKey=k; const d=new Date(k+'T12:00:00');
-    document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d);
-    renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open');
-}
+function openModal(k){ editKey=k; const d=new Date(k+'T12:00:00'); document.getElementById('modal-title').innerText=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(d); renderEntriesList(); hideForm(); document.getElementById('modal-bg').classList.add('open'); }
 function renderEntriesList(){
     const list=entries[editKey]||[];
-    document.getElementById('list-container').innerHTML=list.map((e,i)=>`
-        <div style="background:var(--bg2);padding:12px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between">
-            <span>${SPORTS.find(s=>s.id===e.sport).icon} ${e.km?e.km+'km':''} ${e.time?e.time+'m':''}</span>
-            <button onclick="deleteEntry(${i})" style="background:none;border:none;color:#f87171">✕</button>
-        </div>`).join('');
+    document.getElementById('list-container').innerHTML=list.map((e,i)=>`<div style="background:var(--bg2);padding:12px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between"><span>${SPORTS.find(s=>s.id===e.sport).icon} ${e.km?e.km+'km':''} ${e.time?e.time+'m':''}</span><button onclick="deleteEntry(${i})" style="background:none;border:none;color:#f87171">✕</button></div>`).join('');
 }
 function showForm(){
     document.getElementById('m-km').value=''; document.getElementById('m-time').value=''; document.getElementById('m-notes').value='';
-    const sel = document.getElementById('m-sport');
-    sel.innerHTML = SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
-    sel.onchange = updateFields; updateFields();
-    document.getElementById('view-list').style.display='none'; document.getElementById('view-form').style.display='block';
+    const sel = document.getElementById('m-sport'); sel.innerHTML = SPORTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+    sel.onchange = updateFields; updateFields(); document.getElementById('view-list').style.display='none'; document.getElementById('view-form').style.display='block';
 }
-function updateFields(){
-    const s = SPORTS.find(sp=>sp.id===document.getElementById('m-sport').value);
-    document.getElementById('km-box').style.display = s.hasKm ? 'block' : 'none';
-    document.getElementById('time-box').style.display = s.hasTime ? 'block' : 'none';
-}
+function updateFields(){ const s = SPORTS.find(sp=>sp.id===document.getElementById('m-sport').value); document.getElementById('km-box').style.display = s.hasKm ? 'block' : 'none'; document.getElementById('time-box').style.display = s.hasTime ? 'block' : 'none'; }
 function hideForm(){ document.getElementById('view-list').style.display='block'; document.getElementById('view-form').style.display='none'; }
 function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
 function saveEntry(){
-    const sId = document.getElementById('m-sport').value;
-    const km = parseFloat(document.getElementById('m-km').value) || 0;
-    const time = parseFloat(document.getElementById('m-time').value) || 0;
-    if(!entries[editKey]) entries[editKey]=[];
-    entries[editKey].push({sport:sId, km, time, notes:document.getElementById('m-notes').value});
+    const sId = document.getElementById('m-sport').value, km = parseFloat(document.getElementById('m-km').value) || 0, time = parseFloat(document.getElementById('m-time').value) || 0;
+    if(!entries[editKey]) entries[editKey]=[]; entries[editKey].push({sport:sId, km, time, notes:document.getElementById('m-notes').value});
     save(); hideForm(); renderEntriesList(); renderCalendar(); renderHeatmap();
 }
 function deleteEntry(i){ entries[editKey].splice(i,1); if(!entries[editKey].length)delete entries[editKey]; save(); renderEntriesList(); renderCalendar(); renderHeatmap(); }

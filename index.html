@@ -182,17 +182,37 @@ const SPORTS=[
  {id:'skip',  name:'Joker',    icon:'🃏', color:'#666666', hasKm:false, hasTime:false, isAuto:false}
 ];
 
-let entries = JSON.parse(localStorage.getItem('ft2_e') || '{}');
-let instructions = JSON.parse(localStorage.getItem('ft2_i') || '{}');
-let recordsManual = JSON.parse(localStorage.getItem('ft2_rm') || '{}');
-let weeklyGoal = JSON.parse(localStorage.getItem('ft2_goal') || '30');
+// On prépare les variables vides
+let entries = {};
+let instructions = {};
+let recordsManual = {};
+let weeklyGoal = 30;
 let currentDate = new Date(), statPeriod = 'all', editKey = null, editIdx = null;
 
-function save(){ 
-    localStorage.setItem('ft2_e', JSON.stringify(entries)); 
-    localStorage.setItem('ft2_i', JSON.stringify(instructions));
-    localStorage.setItem('ft2_rm', JSON.stringify(recordsManual));
-    localStorage.setItem('ft2_goal', JSON.stringify(weeklyGoal));
+// On va chercher les données dans Firebase au chargement du site
+const dbRef = ref(database, 'fitcouple_data');
+onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        entries = data.entries || {};
+        instructions = data.instructions || {};
+        recordsManual = data.recordsManual || {};
+        weeklyGoal = data.weeklyGoal || 30;
+    }
+    // On met à jour l'affichage avec les données téléchargées
+    renderCalendar();
+    if(document.getElementById('stats').classList.contains('active')) { renderStats(); renderHeatmap(); }
+    if(document.getElementById('records').classList.contains('active')) renderRecords();
+    if(document.getElementById('instructions').classList.contains('active')) renderInstructions();
+});
+ function save(){ 
+    // On envoie tout dans Firebase sous le dossier 'fitcouple_data'
+    set(ref(database, 'fitcouple_data'), {
+        entries,
+        instructions,
+        recordsManual,
+        weeklyGoal
+    });
 }
 
 function exportData(){

@@ -1,7 +1,57 @@
 <!DOCTYPE html>
-<div id="login-section" style="margin-top: 50px; padding: 20px; border: 1px solid #ccc;">
-  <h3>Connexion Admin (Toi uniquement)</h3>
-  <input type="email" id="email-input" placeholder="Ton adresse email">
-  <input type="password" id="password-input" placeholder="Ton mot de passe">
-  <button id="login-btn">Se connecter</button>
-</div>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion Admin</title>
+</head>
+<body>
+    <div id="login-section" style="margin-top: 50px; padding: 20px; border: 1px solid #ccc;">
+        <h3>Connexion Admin (Toi uniquement)</h3>
+        <input type="email" id="email-input" placeholder="Ton adresse email">
+        <input type="password" id="password-input" placeholder="Ton mot de passe">
+        <button id="login-btn">Se connecter</button>
+    </div>
+
+    <script type="module">
+        // 1. Importation de Firebase et de l'Authentification
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // 2. TA CONFIGURATION FIREBASE (Tu dois remplacer cette partie)
+        const firebaseConfig = {
+            // IL FAUT ALLER CHERCHER CES LIGNES DANS TON FICHIER index.html
+            // apiKey: "...",
+            // authDomain: "fitcouple-...",
+            // databaseURL: "...",
+            // projectId: "fitcouple-...",
+            // etc...
+        };
+
+        // 3. Initialisation
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 4. Action du bouton de connexion
+        const loginBtn = document.getElementById("login-btn");
+        const emailInput = document.getElementById("email-input");
+        const passwordInput = document.getElementById("password-input");
+
+        loginBtn.addEventListener("click", () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    console.log("Connecté avec succès");
+                    alert("Connexion réussie ! Tu es identifié.");
+                    // Ça te ramène automatiquement sur la page principale après la connexion
+                    window.location.href = "index.html"; 
+                })
+                .catch((error) => {
+                    console.error("Erreur :", error.message);
+                    alert("Erreur de connexion. Mauvais email ou mot de passe.");
+                });
+        });
+    </script>
+</body>
+</html>
